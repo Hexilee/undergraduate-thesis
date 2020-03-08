@@ -9,27 +9,109 @@
 如何根据各点坐标渲染出3D图形？
 又如何将服务端重建的点坐标安全又实时地传输到客户端渲染程序？
 
-本章将基于各类研究与文献来讨论这些问题。\cite{protocol-buffers}
-
-形变传感器的研究进展和趋势如何？
-各类形变传感器各有何优缺点？
-在各种应用场景下应使用哪一类形变传感器？
-使用某类传感器时可以获得哪一类的数据？
-如何通过不同类别的数据重建出曲线的空间各点坐标？
-如何根据各点坐标渲染出3D图形？
-又如何将服务端重建的点坐标安全又实时地传输到客户端渲染程序？
-
-形变传感器的研究进展和趋势如何？
-各类形变传感器各有何优缺点？
-在各种应用场景下应使用哪一类形变传感器？
-使用某类传感器时可以获得哪一类的数据？
-如何通过不同类别的数据重建出曲线的空间各点坐标？
-如何根据各点坐标渲染出3D图形？
-又如何将服务端重建的点坐标安全又实时地传输到客户端渲染程序？
+本章将基于各类研究与文献来讨论这些问题。
 
 \section{国内外研究现状}
 \subsection{形变传感器的研究方向及进展}
+
+形变传感器主要分为两大类，一类是传统形变传感器（Conventional Shape Sensors, CSS），
+另一类是光纤形变传感器（Fiber Optic Shape Sensors, FOSS）， 
+其中传统形变传感器又分为非接触式和接触式两种。
+
+非接触式传感器包括视觉系统传感器（如相机）、
+无线电监测与测距（Radio Detection and Ranging, RaDAR）
+或光监测与测距（Light Detection and Ranging, LiDAR）传感器，
+这些传感器的性能与正确性受环境温度和污染干扰很大。
+
+随着传感器的需求场景越来越多且复杂，非接触传感系统越来越局限，
+对小型且灵活的接触式传感器的需求也就越来越大。
+接触式传感器可以直接连接到物体上随其移动，
+并将位置转换为光、电信号以感测形状、曲率、弯曲和扭曲。
+
 \subsubsection{接触式传统形变传感器}
+
+接触式CSS主要分为电阻压力传感器、光电传感器和微机电系统（Micro-Electo-Mechanical System, MEMS）传感器。
+它们各自的简介、优缺点和应用如下表\cite{recent-dev-in-foss}：
+
+\begin{table}[!htbp]
+\begin{center}
+\begin{tabular}{p{0.20\textwidth}p{0.20\textwidth}p{0.30\textwidth}p{0.30\textwidth}}
+\toprule
+\textbf{传感器技术} & \textbf{简介} & \makebox[5cm][c]{\textbf{优点与应用}} & \makebox[5cm][c]{\textbf{缺点}}\\
+
+\midrule
+
+电阻压力传感器 & 用于短距离二维弯曲或关节运动测量。&
+\begin{itemize}
+\setlength{\itemsep}{0pt}
+\setlength{\parsep}{0pt}
+\setlength{\parskip}{0pt}
+    \item 低成本；
+    \item 与其它电器件相兼容；
+    \item 非常适用于可穿戴电子产品。
+\end{itemize}
+& 
+\begin{itemize}
+\setlength{\itemsep}{0pt}
+\setlength{\parsep}{0pt}
+\setlength{\parskip}{0pt}
+    \item 不够精准；
+    \item 尺寸重量过大，不适用于小尺寸的自动控制应用；
+    \item 复杂且接线繁琐，不适用于大规模应用。
+\end{itemize} \\
+
+\midrule
+
+光电传感器 & 基于密集的传感器网络工作：一种可计算物体3D表面的算法解决方案；一种电阻率传感器网络；三轴陀螺仪、三轴加速 度计和航班时间距离传感器。&
+\begin{itemize}
+\setlength{\itemsep}{0pt}
+\setlength{\parsep}{0pt}
+\setlength{\parskip}{0pt}
+    \item 作为可穿戴设备检测脊椎姿势变化，进行医疗运动和预防伤害方面具有巨大潜力；
+    \item 易于大规模生产；
+    \item 与Arduinos等价格低廉的微电子设备兼容。
+\end{itemize}
+& 
+\begin{itemize}
+\setlength{\itemsep}{0pt}
+\setlength{\parsep}{0pt}
+\setlength{\parskip}{0pt}
+    \item 对于工业应用而言，不是可靠且准确的解决方案；
+    \item 要求传感器周围有自由空间，以便光学传感器能够正常工作；
+    \item 无法保证精度；
+    \item 不够灵活。
+\end{itemize} \\
+
+\midrule
+
+MEMS传感器 & 结合了加速度计、陀螺仪和磁力计的微电机系统。&
+\begin{itemize}
+\setlength{\itemsep}{0pt}
+\setlength{\parsep}{0pt}
+\setlength{\parskip}{0pt}
+    \item 钻井；
+    \item 地面监控；
+    \item 远程测量；
+    \item 适用于密闭空间；
+    \item 精加工。
+\end{itemize}
+& 
+\begin{itemize}
+\setlength{\itemsep}{0pt}
+\setlength{\parsep}{0pt}
+\setlength{\parskip}{0pt}
+    \item 难以定制；
+    \item 笨重；
+    \item 低柔韧性（长关节）；
+    \item 测量分辨率低；；
+    \item 昂贵；
+\end{itemize} \\
+\bottomrule
+\end{tabular}
+\caption{接触式CSS的优缺点对比}
+\end{center}
+\end{table}
+
 \subsubsection{光纤形变传感器}
 \subsection{曲线重建算法}
 \subsubsection{连续化算法}
