@@ -336,6 +336,29 @@ B样条曲线插值法和三次样条曲线插值法。
 \end{enumerate}
 
 \subsubsection{拟合算法}
+
+常用的拟合算法有曲率方向作为运动坐标系坐标轴的拟合算法和基于Frenet标架的拟合算法。
+
+\begin{enumerate}[label=(\Alph*)]
+    \item \textbf{曲率方向作为运动坐标系坐标轴的拟合算法} \\
+
+    \begin{figure}
+    \centering
+    \includegraphics[scale=0.4]{cartesian-coordinate-system.png}
+    \caption{曲率方向作为运动坐标系坐标轴}
+    \end{figure}
+
+    此算法的原理是以每个微段的方向为z轴建立运动坐标系$o_i-a_ib_ic_i$，
+    并通过几何方法求得下一个点在此坐标系下的相对坐标$o_{i+1} \{d_{ai}, d_{bi}, d_{ci}\}$，
+    再通过线性变换得到下一个点的运动坐标系$o_{i+1}-a_{i+1}b_{i+1} c_{i+1}$。
+    这样就可以求得每个点在上个运动坐标系下的相对坐标以及当前坐标系相对上个坐标系的变换矩阵$t_{i, i+1}$。
+
+    将变换矩阵累乘即可得到各运动坐标系相对绝对（原点）坐标系的变换矩阵 $T_i$。
+    然后将相对坐标$o_{i+1} \{d_{ai}, d_{bi}, d_{ci}\}$乘以$T_i$的逆矩阵即可得绝对坐标。
+
+    \item \textbf{基于Frenet标架的拟合算法} \\
+\end{enumerate}
+
 \subsection{三维渲染技术}
 \subsubsection{OpenGL}
 \subsubsection{WebGL和Three.js}
