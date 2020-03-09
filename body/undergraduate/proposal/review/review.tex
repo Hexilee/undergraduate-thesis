@@ -353,10 +353,99 @@ B样条曲线插值法和三次样条曲线插值法。
     再通过线性变换得到下一个点的运动坐标系$o_{i+1}-a_{i+1}b_{i+1} c_{i+1}$。
     这样就可以求得每个点在上个运动坐标系下的相对坐标以及当前坐标系相对上个坐标系的变换矩阵$t_{i, i+1}$。
 
+    \begin{align}
+        k_i &= \sqrt{k_{ai} ^ 2 + k_{bi} ^ 2}, \\
+        \theta_i &= k_i \cdot d_s, \\
+        cos\alpha_i &= k_{ai} / k_i, \\
+        sin\alpha_i &= k_{bi} / k_i, \\
+        d_a &= \frac{cos\alpha_i \cdot (1 - cos\theta_i)}{k_i}, \\
+        d_b &= \frac{sin\alpha_i \cdot (1 - cos\theta_i)}{k_i}, \\
+        d_c &= \frac{sin\theta}{k_i}, \\
+        t_{i, i+1} &= \left[
+            \begin{matrix}
+                cos \alpha_i & -sin \alpha_i & 0 \\
+                sin \alpha_i & cos \alpha_i & 0 \\
+                0 & 0 & 1
+            \end{matrix}
+            \right]
+            \cdot
+            \left[
+            \begin{matrix}
+                cos \theta_i & 0 & sin \theta_i \\
+                0 & 1 & 0 \\
+                -sin \theta_i & 0 & cos \theta_i \\
+            \end{matrix}
+            \right]
+            \cdot
+            \left[
+            \begin{matrix}
+                cos \alpha_i & sin \alpha_i & 0 \\
+                -sin \alpha_i & cos \alpha_i & 0 \\
+                0 & 0 & 1
+            \end{matrix}
+            \right]
+    \end{align}
+
+    当前坐标系点乘三个矩阵的几何意义分别为：\\
+    \begin{enumerate}
+        \item 绕$\vec c_i$旋转一个$\alpha_i$角使得$\vec a_i$与$\vec k_i$同向；
+        \item 绕$\vec b_i$旋转一个$\theta_i$角得到$\vec c_{i+1}$；
+        \item 绕$\vec c_{i+1}$旋转一个$-\alpha_i$角得到$\vec a_{i+1}$和$\vec b_{i+1}$。
+    \end{enumerate}
+
     将变换矩阵累乘即可得到各运动坐标系相对绝对（原点）坐标系的变换矩阵 $T_i$。
     然后将相对坐标$o_{i+1} \{d_{ai}, d_{bi}, d_{ci}\}$乘以$T_i$的逆矩阵即可得绝对坐标。
 
     \item \textbf{基于Frenet标架的拟合算法} \\
+    我们也可以使用微分几何中常用的Frenet坐标标架。令$\vec T$为切向量，$\vec N$为主法向量，指向微段方向；$\vec B$为副法向量，
+    则有：$\vec B = \vec T \times \vec N$。
+
+    假设第$i$段曲线在$xoz$平面内，则两端点平移量$p_{i+1}$有：
+    \begin{equation}
+        p_{i+1} = [-(1-cos \ \theta_i)/k_i \quad 0 \quad sin \ \theta_i/k_i]^T
+    \end{equation}
+    曲率$k_i$、弧长$d_s$和弧角$\theta_i$满足$\theta_i = d_s \cdot k_i$。坐标系平移后沿$B_i$轴旋转$\theta_i$，则有：
+    \begin{equation}
+    [T_{B_i} ^ {\theta_i}] = \left[
+        \begin{matrix}
+        cos \theta_i & 0 & -sin \theta_i & 0 \\
+        0 &1 & 0 & 0 \\
+        sin \theta_i & 0 & cos \theta_i & 0 \\
+        0 & 0 & 0 & 1 \\
+        \end{matrix}
+    \right]
+    \end{equation}
+    接着将坐标系沿$T_i$旋转$\Delta \phi_{i+1}$，其值由下式求出：
+    \begin{equation}
+    \Delta \phi_{i+1} = \begin{cases}
+        \phi_{i+1} - \phi_i,&(\phi_{i+1} \ge \phi_i) \\
+        2\pi + \phi_{i+1} - \phi_i,&(\phi_{i+1} \textless \phi_i)\\
+    \end{cases}
+    \end{equation}
+    则有：
+    \begin{equation}
+    [T_{T_i} ^ {\Delta\phi_{i+1}}] = \left[
+        \begin{matrix}
+        cos \Delta\phi_{i+1} & -sin \Delta\phi_{i+1} & 0 & 0 \\
+        sin \Delta\phi_{i+1} & cos \Delta\phi_{i+1} & 0 & 0 \\
+        0 & 0 & 1 & 0 \\
+        0 & 0 & 0 & 1 \\
+        \end{matrix}
+    \right]
+    \end{equation}
+    由此可求得一个微段运动坐标系的变换矩阵：
+    \begin{equation}
+    [t_{i+1}] = \left[
+        \begin{matrix}
+        & [T_{i+1}] & & p_{i+1} \\
+        0 & 0 & 0 & 1 \\
+        \end{matrix}
+    \right] \tag{3} 
+    \end{equation}
+    其中$[T_{i+1}] = [T_{B_i} ^ {\theta_i}]  [T_{T_i} ^ {\Delta\phi_{i+1}}]$。
+
+    通过此变换矩阵即可求得每个点的运动坐标系和下个点的相对坐标，再通过变换矩阵的逆矩阵求得绝对坐标，最终拟合出曲线。
+
 \end{enumerate}
 
 \subsection{三维渲染技术}
