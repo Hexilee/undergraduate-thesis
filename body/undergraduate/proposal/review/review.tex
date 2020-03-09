@@ -449,11 +449,133 @@ B样条曲线插值法和三次样条曲线插值法。
 \end{enumerate}
 
 \subsection{三维渲染技术}
+
+三维渲染是通过电脑计算的方式把模型从三维模型网格呈现出二维真实感高的图像，
+计算过程包含光线及辅助光线、材料的材质和纹理、相机相关设置等综合变量。
+
+三维渲染包括实时渲染和非实时渲染。
+
+实时渲染主要应用在游戏领域，电脑会实时的计算和展示所渲染的结果，帧率在20-120左右。
+因此需要在帧率一定的情况下最大化渲染的真实性。计算机在图像处理的过程中会用到一些“技巧”以迎合肉眼感官，
+这些“技巧”包括镜头光晕（lends flare）、景深（depth of field）和动态模糊（motion blur）等。
+计算机的算力决定了渲染的真实感，通常需要GPU来协助完成。
+
+非实时渲染通常是电影或视频，借助计算机有限的算力，通过延长渲染时间达到更加真实的效果。
+射线追踪（ray tracing）和辐射度算法（radiosity）是非实时渲染常用的技巧，以达到更加真实的感觉。
+随着技术的发展，不同种类的物质形式有了更精确的计算技巧，
+例如粒子系统（模拟雨、烟和火）、容积取样（模拟雾、灰尘）、焦散性质和子面散射(subsurface scattering)。
+渲染过程中把不同层的物质分开计算后合成一个最终布景。
+
+本小结主要介绍实时渲染中常用的技术。
+
 \subsubsection{OpenGL}
+
+OpenGL(Open Graphics Library)是一种用于渲染2D或3D图像的跨平台编程接口，
+它并不指任何一种特定实现，而是一种接口规范。与之类似的还有仅用于Windows平台的Direct3D。
+
+OpenGL由Khronos Group开发维护，GPU的硬件开发商则需要提供满足OpenGL规范的驱动程序，
+它们负责将OpenGL定义的API命令翻译为GPU指令。
+
+这个接口由近350个不同的函数调用组成，用来从简单的图形数据绘制复杂的三维图像，
+常用于CAD、虚拟现实、科学可视化程序和电子游戏开发。 
+
+它有很多的具体实现和编程语言绑定，如JavaScript绑定的WebGL；
+C绑定的WGL、GLX和CGL；iOS提供的C绑定；Android提供的Java和C绑定。
+
 \subsubsection{WebGL和Three.js}
+
+WebGL是浏览器上的OpenGL实现，用于在任何兼容的Web浏览器中呈现交互式3D和2D图形。
+WebGL通过引入一个与OpenGL ES 2.0紧密相符合的API，可以在HTML5 <canvas>元素中使用。
+
+目前支持WebGL的浏览器有：Firefox 4+、Google Chrome 9+、Opera 12+、Safari 5.1+和Internet Explorer 11+；
+但是WebGL一些特性也需要用户的硬件设备支持。
+
+WebGL几乎是完全地“跨平台”，使用任何支持WebGL的浏览器打开网页即可完成客户端渲染，而无需下载另外的软件或浏览器插件。
+
+Three.js是一个基于WebGL的3D图形库，它封装了很多实用的图形组件。由Ricardo Cabello在2010四月于GitHub首次发布。
+它的起源可以追溯到他在本世纪初演示场景的参与。代码最初使用ActionScript，稍后2009年移植到JavaScript。在Cabello看来，
+转移到JavaScript有两个优点：每次运行前没有编译代码和平台独立性。
+随着WebGL的到来，Paul Brunt增加渲染功能，这使得Three.js设计与绘制的代码成为一个模块，而不是核心本身。
+它提供了如下功能：
+
+\begin{itemize}
+    \item 效果：浮雕，对眼和视差屏障；
+    \item 场景：在运行时添加和删除对象、雾；
+    \item 镜头：视角和正字法；控制器：轨迹球、FPS、路径等；
+    \item 动画：电枢、运动学、逆运动学、变形和关键帧；
+    \item 灯光：环境、方向、点和点光；阴影：投射和接收；
+    \item 材料：Lambert、海防、光滑阴影等；
+    \item 材质：访问完整的OpenGL着色语言（GLSL）能力：镜头光晕；
+    \item 对象：网格、粒子、精灵、线、带、骨头等；
+    \item 几何：平面、立方体、球体、圆环、3D文本等；修改器：车床、挤压和管；
+    \item 数据加载器：二进制、图像、JSON和场景；
+    \item 事业：全套时间和三维数学函数包括锥、矩阵、四元、UVs等；
+    \item 输入输出：与three.js兼容的 JSON文件：Blender、openctm、FBX、Max，OBJ；
+    \item 支持：API文档持续更新，公共论坛和维基全面运作；
+    \item 例子：超过150个文件的编码例子加字体、模型、纹理、声音和其他支持文件；
+    \item 调试：Stats.js、WebGL检查器、Three.js检查器。
+\end{itemize}
+另外Three.js依据MIT公用许可证发布，完全开源开放，且可以在所有支持WebGL 1.0的浏览器中运行。
+
 \subsection{网络数据传输技术}
+
+计算机网络模型一般指OSI七层模型，有时也使用TCP/IP四层模型。
+本小结主要介绍常用的应用层协议（OSI模型中的会话层、表示层和应用层；TCP/IP模型中的应用层）。
+
 \subsubsection{HTTP}
+
+超文本传输协议（Hyper-Text Transfer Protocol, HTTP）是一个用于传输超媒体文档（例如 HTML）的应用层协议。
+它是为Web浏览器与Web服务器之间的通信而设计的，但也可以用于其他目的。
+HTTP遵循经典的客户端-服务端模型，客户端打开一个连接以发出请求，然后等待它收到服务器端响应。
+HTTP是无状态协议，这意味着服务器不会在两个请求之间保留任何数据（状态）。
+该协议虽然通常基于传输控制协议（Transmission Control Protocol, TCP），但可以在任何可靠的传输层上使用。
+
+HTTP协议目前有1.0，1.1和2.0三个版本，前两个版本是包结构兼容的文本协议；而HTTP/2则是二进制协议，不与HTTP/1.x兼容。
+
+目前使用最广泛的版本是HTTP/1.1。另外，HTTP/1.x协议提供了一种特殊的机制，
+这一机制允许将一个已建立的连接升级成新的、不相容的协议。通常来说这一机制总是由客户端发起的
+（不过也有例外，比如说可以由服务端发起升级到传输层安全协议（Transport Layer Security, TLS）），
+服务端可以选择是否要升级到新协议。借助这一技术，连接可以以常用的协议启动（如HTTP/1.1），
+随后再升级到HTTP/2甚至是WebSocket。
+
 \subsubsection{WebSocket}
+
+WebSocket（简称WS）是浏览器提供的一种浏览器与服务器进行全双工通讯的网络技术，
+它是一个独立的协议，但支持使用HTTP/1.x握手。
+
+相比于HTTP/1.x，它有如下优点：
+
+\begin{itemize}
+    \item 支持双向通信，实时性更强；
+    \item 更好的二进制支持；
+    \item 较少的控制开销。连接创建后，WS客户端、服务端进行数据交换时，协议控制的数据包头部较小。在不包含头部的情况下，服务端到客户端的包头只有2~10字节（取决于数据包长度），客户端到服务端的的话，需要加上额外的4字节的掩码。而HTTP/1.x每次通信都需要携带完整的头部；
+    \item 支持扩展。WS协议定义了扩展，用户可以扩展协议，或者实现自定义的子协议（比如支持自定义压缩算法等）。
+\end{itemize}
+
+其握手过程如下：
+
+\begin{enumerate}
+    \item 客户端发起升级协议请求（基于HTTP/1.x）\\
+        \begin{lstlisting}
+GET / HTTP/1.1 
+Host: localhost:8080 
+Connection: Upgrade 
+Upgrade: websocket 
+Sec-WebSocket-Version: 13 
+Sec-WebSocket-Key: w4v7O6xFTi36lq3RNcgctw==
+        \end{lstlisting}
+        其中\fira{Sec-WebSocket-Version}不得低于13，\fira{Sec-WebSocket-Key}是一个随机字符串，用于防止无意的连接。
+    \item 服务端协议升级响应 \\
+        \begin{lstlisting}
+HTTP/1.1 101 Switching Protocols
+Connection: Upgrade
+Upgrade: websocket
+Sec-WebSocket-Accept: Oy4NRAQ13jhfONC7bP8dTKb4PTU=
+        \end{lstlisting}
+        其中\fira{Sec-WebSocket-Accept}由请求中的\fira{Sec-WebSocket-Key}生成，
+        用于客户端校验；如果客户端校验无误，则WS握手成功。
+\end{enumerate}
+
 \subsubsection{gRPC}
 \subsubsection{TLS}
 \section{研究展望}
