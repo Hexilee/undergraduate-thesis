@@ -1,4 +1,6 @@
 \setCJKmainfont{FangSong}
 \setmonofont{Fira Code Retina}
-\newfontfamily{\fira}{Fira Code Retina}
+\newfontfamily{\firacodelight}{Fira Code Light}
+\newenvironment{firacode}{\firacodelight}{\par}
+\DeclareTextFontCommand{\fira}{\firacode}
 \setmainfont{Times New Roman}
