@@ -94,3 +94,40 @@ TypeScript支持为现存JavaScript库添加类型信息的定义文件，方便
 Three.js在前文介绍过，在这里不作赘述。grpc-web是Google官方提供的gRPC协议 Web前端实现。
 
 \subsection{可行性分析}
+
+本课题所用的所有技术均为各社区最为潮流而先进的技术。其中gRPC正支持着成千上万的应用；
+TLS保障着整个互联网的安全；Rust正在为Firefox添砖加瓦；TypeScript是JavaScript社区最受欢迎的转译语言。
+从技术栈上来说无懈可击。
+
+但重建算法还存在着一些问题，比如上文中介绍的两种拟合算法都无法修正传感器发生扭转而导致的方向偏差。拟提出扭转的修正算法：
+
+以曲率方向作为运动坐标系坐标轴的拟合算法\ref{alg:reconstruction}为例，
+现引入一个微段扭转角$\phi_i$，转矩方向与$\vec c_i$相同则为正，反之为负。则修正后的变换矩阵$t_{i, i+1}$为：
+
+\begin{equation}
+t_{i, i+1} = \left[
+    \begin{matrix}
+        cos \alpha_i & -sin \alpha_i & 0 \\
+        sin \alpha_i & cos \alpha_i & 0 \\
+        0 & 0 & 1
+    \end{matrix}
+    \right]
+    \cdot
+    \left[
+    \begin{matrix}
+        cos \theta_i & 0 & sin \theta_i \\
+        0 & 1 & 0 \\
+        -sin \theta_i & 0 & cos \theta_i \\
+    \end{matrix}
+    \right]
+    \cdot
+    \left[
+    \begin{matrix}
+        cos (\alpha_i - \phi_i) & sin (\alpha_i - \phi_i) & 0 \\
+        -sin (\alpha_i - \phi_i) & cos (\alpha_i - \phi_i) & 0 \\
+        0 & 0 & 1
+    \end{matrix}
+\right]
+\end{equation}
+
+这样就实现了对扭转的修正。
