@@ -349,8 +349,8 @@ B样条曲线插值法和三次样条曲线插值法。
     \end{figure}
 
     此算法的原理是以每个微段的方向为z轴建立运动坐标系$o_i-a_ib_ic_i$，
-    并通过几何方法求得下一个点在此坐标系下的相对坐标$o_{i+1} \{d_{ai}, d_{bi}, d_{ci}\}$，
-    再通过线性变换得到下一个点的运动坐标系$o_{i+1}-a_{i+1}b_{i+1} c_{i+1}$。
+    并通过几何方法求得下一个点在此坐标系下的相对坐标\cite{3d-shape-display}$o_{i+1} \{d_{ai}, d_{bi}, d_{ci}\}$，
+    再通过线性变换得到下一个点的运动坐标系\cite{three-dimensional-curve}$o_{i+1}-a_{i+1}b_{i+1} c_{i+1}$。
     这样就可以求得每个点在上个运动坐标系下的相对坐标以及当前坐标系相对上个坐标系的变换矩阵$t_{i, i+1}$。
 
     \begin{align}
@@ -358,9 +358,9 @@ B样条曲线插值法和三次样条曲线插值法。
         \theta_i &= k_i \cdot d_s, \\
         cos\alpha_i &= k_{ai} / k_i, \\
         sin\alpha_i &= k_{bi} / k_i, \\
-        d_a &= \frac{cos\alpha_i \cdot (1 - cos\theta_i)}{k_i}, \\
-        d_b &= \frac{sin\alpha_i \cdot (1 - cos\theta_i)}{k_i}, \\
-        d_c &= \frac{sin\theta}{k_i}, \\
+        d_a &= \frac{cos\alpha_i \cdot (1 - cos\theta_i)}{k_i} \cdot d_s, \\
+        d_b &= \frac{sin\alpha_i \cdot (1 - cos\theta_i)}{k_i} \cdot d_s, \\
+        d_c &= \frac{sin\theta_i}{k_i} \cdot d_s, \\
         t_{i, i+1} &= \left[
             \begin{matrix}
                 cos \alpha_i & -sin \alpha_i & 0 \\
@@ -397,7 +397,7 @@ B样条曲线插值法和三次样条曲线插值法。
     然后将相对坐标$o_{i+1} \{d_{ai}, d_{bi}, d_{ci}\}$乘以$T_i$的逆矩阵即可得绝对坐标。
 
     \item \textbf{基于Frenet标架的拟合算法} \\
-    我们也可以使用微分几何中常用的Frenet坐标标架。令$\vec T$为切向量，$\vec N$为主法向量，指向微段方向；$\vec B$为副法向量，
+    我们也可以使用微分几何中常用的Frenet坐标标架\cite{用于光纤光栅曲线重建算法的坐标点拟合}。令$\vec T$为切向量，$\vec N$为主法向量，指向微段方向；$\vec B$为副法向量，
     则有：$\vec B = \vec T \times \vec N$。
 
     假设第$i$段曲线在$xoz$平面内，则两端点平移量$p_{i+1}$有：
@@ -444,14 +444,14 @@ B样条曲线插值法和三次样条曲线插值法。
     \end{equation}
     其中$[T_{i+1}] = [T_{B_i} ^ {\theta_i}] \cdot [T_{T_i} ^ {\Delta\phi_{i+1}}]$。
 
-    通过此变换矩阵即可求得每个点的运动坐标系和下个点的相对坐标，再通过变换矩阵的逆矩阵求得绝对坐标，最终拟合出曲线。
+    通过此变换矩阵即可求得每个点的运动坐标系和下个点的相对坐标，再通过变换矩阵的逆矩阵求得绝对坐标\cite{FBG-sensor-devices}，最终拟合出曲线。
 
 \end{enumerate}
 
 \subsection{三维渲染技术}
 
-三维渲染是通过电脑计算的方式把模型从三维模型网格呈现出二维真实感高的图像，
-计算过程包含光线及辅助光线、材料的材质和纹理、相机相关设置等综合变量。
+三维渲染是通过电脑计算的方式把模型从三维模型网格呈现出二维真实感高的图像\cite{3DModels_SurveyPaper}，
+计算过程包含光线及辅助光线、材料的材质和纹理、相机相关设置等综合变量\cite{scientce-of-3d-rendering}。
 
 三维渲染包括实时渲染和非实时渲染。
 
@@ -470,7 +470,7 @@ B样条曲线插值法和三次样条曲线插值法。
 
 \subsubsection{OpenGL}
 
-OpenGL(Open Graphics Library)是一种用于渲染2D或3D图像的跨平台编程接口，
+OpenGL(Open Graphics Library)是一种用于渲染2D或3D图像的跨平台编程接口\cite{opengl}，
 它并不指任何一种特定实现，而是一种接口规范。与之类似的还有仅用于Windows平台的Direct3D。
 
 OpenGL由Khronos Group开发维护，GPU的硬件开发商则需要提供满足OpenGL规范的驱动程序，
@@ -484,7 +484,7 @@ C绑定的WGL、GLX和CGL；iOS提供的C绑定；Android提供的Java和C绑定
 
 \subsubsection{WebGL和Three.js}
 
-WebGL是浏览器上的OpenGL实现，用于在任何兼容的Web浏览器中呈现交互式3D和2D图形。
+WebGL是浏览器上的OpenGL实现，用于在任何兼容的Web浏览器中呈现交互式3D和2D图形\cite{webgl}。
 WebGL通过引入一个与OpenGL ES 2.0紧密相符合的API，可以在HTML5 <canvas>元素中使用。
 
 目前支持WebGL的浏览器有：Firefox 4+、Google Chrome 9+、Opera 12+、Safari 5.1+和Internet Explorer 11+；
@@ -492,7 +492,7 @@ WebGL通过引入一个与OpenGL ES 2.0紧密相符合的API，可以在HTML5 <
 
 WebGL几乎是完全地“跨平台”，使用任何支持WebGL的浏览器打开网页即可完成客户端渲染，而无需下载另外的软件或浏览器插件。
 
-Three.js是一个基于WebGL的3D图形库，它封装了很多实用的图形组件。由Ricardo Cabello在2010四月于GitHub首次发布。
+Three.js是一个基于WebGL的3D图形库\cite{threejs}，它封装了很多实用的图形组件。由Ricardo Cabello在2010四月于GitHub首次发布。
 它的起源可以追溯到他在本世纪初演示场景的参与。代码最初使用ActionScript，稍后2009年移植到JavaScript。在Cabello看来，
 转移到JavaScript有两个优点：每次运行前没有编译代码和平台独立性。
 随着WebGL的到来，Paul Brunt增加渲染功能，这使得Three.js设计与绘制的代码成为一个模块，而不是核心本身。
@@ -515,6 +515,7 @@ Three.js是一个基于WebGL的3D图形库，它封装了很多实用的图形�
     \item 例子：超过150个文件的编码例子加字体、模型、纹理、声音和其他支持文件；
     \item 调试：Stats.js、WebGL检查器、Three.js检查器。
 \end{itemize}
+
 另外Three.js依据MIT公用许可证发布，完全开源开放，且可以在所有支持WebGL 1.0的浏览器中运行。
 
 \subsection{网络数据传输技术}
@@ -524,19 +525,19 @@ Three.js是一个基于WebGL的3D图形库，它封装了很多实用的图形�
 
 \subsubsection{HTTP}
 
-超文本传输协议（Hyper-Text Transfer Protocol, HTTP）是一个用于传输超媒体文档（例如 HTML）的应用层协议。
+超文本传输协议\cite{rfc7230}（Hyper-Text Transfer Protocol, HTTP）是一个用于传输超媒体文档（例如 HTML）的应用层协议。
 它是为Web浏览器与Web服务器之间的通信而设计的，但也可以用于其他目的。
 HTTP遵循经典的客户端-服务端模型，客户端打开一个连接以发出请求，然后等待它收到服务器端响应。
 HTTP是无状态协议，这意味着服务器不会在两个请求之间保留任何数据（状态）。
-该协议虽然通常基于传输控制协议（Transmission Control Protocol, TCP），但可以在任何可靠的传输层上使用。
+该协议虽然通常基于传输控制协议\cite{rfc793}（Transmission Control Protocol, TCP），但可以在任何可靠的传输层上使用。
 
-HTTP协议目前有1.0，1.1和2.0三个版本，前两个版本是包结构兼容的文本协议；而HTTP/2则是二进制协议，不与HTTP/1.x兼容。
+HTTP协议目前有1.0，1.1和2.0三个版本，前两个版本是包结构兼容的文本协议；而HTTP/2则是二进制协议\cite{rfc7540}，不与HTTP/1.x兼容。
 
 目前使用最广泛的版本是HTTP/1.1。另外，HTTP/1.x协议提供了一种特殊的机制，
 这一机制允许将一个已建立的连接升级成新的、不相容的协议。通常来说这一机制总是由客户端发起的
-（不过也有例外，比如说可以由服务端发起升级到传输层安全协议（Transport Layer Security, TLS）），
+（不过也有例外，比如说可以由服务端发起升级到传输层安全协议\cite{rfc8446}（Transport Layer Security, TLS）），
 服务端可以选择是否要升级到新协议。借助这一技术，连接可以以常用的协议启动（如HTTP/1.1），
-随后再升级到HTTP/2甚至是WebSocket。
+随后再升级到HTTP/2甚至是WebSocket\cite{rfc6455}。
 
 \subsubsection{WebSocket}
 
@@ -578,8 +579,8 @@ Sec-WebSocket-Accept: Oy4NRAQ13jhfONC7bP8dTKb4PTU=
 
 \subsubsection{gRPC}
 
-gRPC协议是一种由Google制定的远程过程调用（Remote Procedure Call, RPC）协议，
-其基于HTTP/2.0和Protocol Buffers，故获得了以下特性：
+gRPC协议\cite{grpc}是一种由Google制定的远程过程调用（Remote Procedure Call, RPC）协议，
+其基于HTTP/2.0和Protocol Buffers\cite{protocol-buffers}，故获得了以下特性：
 
 \begin{itemize}
     \item 支持客户端双向流（由客户端发起）和服务器端流（由服务器发起）；
@@ -621,7 +622,7 @@ TLS是介于TCP协议和上层应用协议之间的安全层，其作用机理�
 其建立安全连接的基本思路是采用公钥加密法；也就是说，客户端先向服务器端索要公钥，
 然后用公钥加密信息；服务器收到密文后，用自己的私钥解密。
 
-基于RSA密钥交换算法的TLS连接建立大致流程如下：
+基于RSA密钥交换算法\cite{rfc8017}的TLS连接建立大致流程如下：
 
 \begin{enumerate}
     \item 客户端发起连接请求，服务器返回公钥和证书；
