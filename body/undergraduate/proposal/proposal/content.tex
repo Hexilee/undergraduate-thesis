@@ -1,9 +1,96 @@
 \section{项目的主要内容和技术路线}
-
 \subsection{主要研究内容}
+
+本课题主要研究具体的软件架构并尝试实现。首先我们需要分析任务流，此软件大致的任务流如下：
+
+\begin{enumerate}
+    \item 传感器获得形变数据，上传到服务器；
+    \item 服务器根据形变数据连续化、拟合出待测物体形状，并推流到客户端；
+    \item 客户端获得坐标数据，渲染。
+\end{enumerate}
+
+故需要研究的问题有：
+
+\begin{enumerate}
+    \item 如何从传感器获得数据，又使用什么技术上传到服务器？
+    \item 服务器使用什么技术和算法重建待测物体形状，又使用什么技术推流到客户端？
+    \item 客户端使用什么技术渲染并呈现给用户？
+\end{enumerate}
+
 \subsection{技术路线}
-\subsubsection{原始数据流}
-\subsubsection{重建}
-\subsubsection{渲染}
 \subsubsection{网络通信}
+
+首先考虑解决网络通信问题。因为要达到实时监控的目的，各个数据传输环节都应该是“流协议”，
+故应考虑上文中提到的gRPC（基于加密的HTTP/2协议）或WSS（TLS加密的 WebSocket 协议）。
+这两个协议是可以相互替代的，我们优先选择更先进的gRPC协议，而更成熟的WSS协议则作为备选。
+
+既然选择gRPC协议，我们就需要先定义Protocol Buffers文件：
+
+\lstinputlisting[
+    language=protobuf3, 
+    style=protobuf,
+]{body/undergraduate/proposal/proposal/crow.proto}
+
+Protocol Buffers是一种序列化数据结构的协议，同时也包含一个接口描述语言；
+可以描述一些数据结构，并提供程序工具根据这些描述产生代码，
+用于将这些数据结构产生或解析数据流。
+
+这里我们定义了五个结构，分别是\fira{Point, RawPoint, Curv, CurveRequest, RegisterReply}。
+另外我们还定义了\fira{CurveService}服务，它有两个RPC接口，分别是\fira{GetCurve} 和 \fira{Register}。
+
+\fira{Register}的功能是注册一个数据流并返回注册的序列号，这个流需要持续给服务器推送传感器获得的原始数据——曲率点列，
+即\fira{RawPoint}的序列。
+
+\fira{GetCurve}的功能是根据序列号获取坐标点推流，
+这个流会持续给客户端推送重建出的坐标数据点列（即\fira{Point}序列）并附带一个时间戳。
+
+\subsubsection{原始数据流}
+
+原始数据流由传感器数据经初步加工获得，这一步数据加工通常是由一台微机完成。
+由于gRPC并不支持嵌入式平台，我们应当使用一台X86架构的机器完成这个任务（或者使用一台X86架构的机器中转）。
+
+我们当前可以假设原始数据流储存在某台X86机器上，现在需要把数据推到我们的服务器。
+
+这一步我们使用Rust编程语言和它的gRPC库Tonic。
+
+Rust是由Mozilla主导开发的通用、编译型编程语言。设计准则为“安全、并发、实用”，支持函数式、并发式、过程式以及面向对象的编程风格。最新的稳定版本为1.41。
+
+Tonic是Rust的一个gRPC实现；它基于hyper项目，一个正确且高性能的HTTP Server/Client实现。
+
+注册数据流：
+
+\begin{lstlisting}[language=Rust]
+use proto::curve_service_client::CurveServiveClient;
+use proto::RawData;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let mut client = CurveServiveClient::connect("http://[::1]:8080").await?;
+  	let raw_data_stream = unimplemented!();
+    let request = tonic::Request::new(raw_data_stream);
+    let response = client.register(request).await?;
+    println!("index={}", response.index);
+    Ok(())
+}
+\end{lstlisting}
+\subsubsection{重建}
+
+服务器接收到原始数据流后会根据其数据重建曲线。服务器所用技术栈也是Rust语言，gRPC同样使用Tonic。
+
+连续化使用splines，一个高性能的通用插值库。可选择插值方式有线性插值、Bezier曲线插值、B样条曲线插值和三次样条曲线插值，我们选择三次样条曲线插值。
+
+拟合使用曲率方向为坐标轴的坐标点拟合算法，基于科学计算库num以及线性代数库nalgebra。
+
+\subsubsection{三维渲染}
+
+浏览器端技术栈使用TypeScript编程语言，并使用 Three.js渲染；使用 grpc-web 与服务器端交互。
+
+TypeScript是一门由微软进行维护和管理的开源编程语言。TypeScript不仅包含JavaScript的语法，而且还提供了静态类型检查以及使用看起来像基于类的面向对象编程语法操作Prototype。C#的首席架构师以及Delphi和Turbo Pascal的创始人安德斯·海尔斯伯格参与了TypeScript的开发。
+
+TypeScript是为开发大型应用而设计的，它可转译成JavaScript。由于TypeScript是JavaScript的严格超集，任何现有的JavaScript程序都是合法的TypeScript程序。
+
+TypeScript支持为现存JavaScript库添加类型信息的定义文件，方便其他程序静态地使用现有库中的类型。
+
+Three.js在前文介绍过，在这里不作赘述。grpc-web是Google官方提供的gRPC协议 Web前端实现。
+
 \subsection{可行性分析}

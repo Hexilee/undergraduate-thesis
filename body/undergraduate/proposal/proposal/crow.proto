@@ -1,0 +1,26 @@
+syntax = "proto3";
+message Point {
+  double x = 1;
+  double y = 2;
+  double z = 3;
+}
+
+message RawPoint {
+  double ds = 1;
+  double ka = 2;
+  double kb = 3;
+}
+message Curve {
+  uint64 timestamp = 1;
+  repeated Point points = 2;
+}
+message RawData { repeated RawPoint points = 1; }
+
+message CurveRequest { uint64 index = 1; }
+
+message RegisterReply { uint64 index = 1; }
+
+service CurveService {
+  rpc GetCurve(CurveRequest) returns (stream Curve);
+  rpc Register(stream RawData) returns (RegisterReply);
+}
