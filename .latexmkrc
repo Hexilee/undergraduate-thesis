@@ -5,5 +5,5 @@ $xdvipdfmx="xdvipdfmx -q -E -o %D %O %S";
 $clean_ext = 'thm bbl hd loe synctex.gz xdv run.xml';
 $makeindex = 'makeindex -s gind.ist %O -o %D %S';
 
-@default_files=('zjuthesis.tex')
+@default_files=('tikz/*.tex', 'zjuthesis.tex')
 
