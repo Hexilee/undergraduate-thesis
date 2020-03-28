@@ -17,7 +17,7 @@
     MajorFormat     = cs,
     Degree          = undergraduate,   % 'undergraduate' or 'graduate'
     Type            = thesis,          % 'thesis'   or 'design'
-    Period          = proposal,           % 'proposal' or 'final'
+    Period          = final,           % 'proposal' or 'final'
     BlindReview     = false,           % 'false'    or 'true'
     Language        = chinese,         % 'chinese'  or 'english'
     % Below only for 'graduate'
@@ -65,13 +65,13 @@
             {\part{毕业论文开题报告}}
 
         \inputpage{proposal/cover}
-        \inputpage{proposal/previous}
+        % \inputpage{proposal/previous}
         
         \bodystyle
         \inputbody{proposal/content}
 
-        \poststyle
-        \inputpage{proposal/post}
+        %\poststyle
+        %\inputpage{proposal/post}
     }
     {
         % Thesis proposal
@@ -101,7 +101,7 @@
     \inputpage{cover}
 
     \prevstyle
-    \inputpage{previous}
+    % \inputpage{previous}
     \inputpage{toc}
     
     % Main contents
