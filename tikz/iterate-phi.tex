@@ -1,0 +1,66 @@
+\documentclass[tikz]{standalone}
+
+\usepackage{tikz-3dplot}
+\usepackage{tikz}   %TikZ is required for this to work.  Make sure this exists before the next line
+
+\usepackage[active,tightpage]{preview}  %generates a tightly fitting border around the work
+
+\PreviewEnvironment{tikzpicture}
+\setlength\PreviewBorder{2mm}
+
+\begin{document}
+
+%Angle Definitions
+%-----------------
+
+%set the plot display orientation
+%synatax: \tdplotsetdisplay{\theta_d}{\phi_d}
+\tdplotsetmaincoords{0}{180}
+
+%define polar coordinates for some vector
+%TODO: look into using 3d spherical coordinate system
+\pgfmathsetmacro{\phivec}{20}
+\pgfmathsetmacro{\alphavec}{40}
+\pgfmathsetmacro{\betavec}{60}
+\pgfmathsetmacro{\totalvec}{150}
+
+%start tikz picture, and use the tdplot_main_coords style to implement the display 
+%coordinate transformation provided by 3dplot
+\begin{tikzpicture}[scale=5,tdplot_main_coords]
+
+%set up some coordinates 
+%-----------------------
+\coordinate (O) at (0,0,0) node[anchor=south east]{$o(c)$};
+
+%draw figure contents
+%--------------------
+
+%draw the main coordinate system axes
+\draw[dashed,->] (0,0,0) -- (1,0,0) node[anchor=north east]{$x$};
+\draw[dashed,->] (0,0,0) -- (0,1,0) node[anchor=north west]{$y$};
+\draw[dashed] (1,0,0) arc (0:\totalvec:1);
+
+%draw the angle \phi, and label it
+%syntax: \tdplotdrawarc[coordinate frame, draw options]{center point}{r}{angle}{label options}{label}
+% \tdplotdrawarc{(O)}{0.2}{0}{\phivec}{anchor=north}{$\phi_i$}
+
+
+%set the rotated coordinate definition within display using a translation
+%coordinate and Euler angles in the "z(\phi)y(\beta)z(\gamma)" euler rotation convention
+%syntax: \tdplotsetrotatedcoords{\phi}{\beta}{\gamma}
+%\tdplotsetrotatedcoords{\phivec}{\thetavec}{0}
+\tdplotsetrotatedcoords{\alphavec}{0}{0}
+\tdplotsetrotatedcoordsorigin{(O)}
+
+\draw[thick,tdplot_rotated_coords,->] (0,0,0) -- (1,0,0) node[anchor=north west]{$a_i$};
+\draw[thick,tdplot_rotated_coords,->] (0,0,0) -- (0,1,0) node[anchor=west]{$b_i$};
+
+\tdplotsetrotatedcoords{\betavec}{0}{0}
+\tdplotsetrotatedcoordsorigin{(O)}
+
+\draw[dashed,tdplot_rotated_coords,->] (0,0,0) -- (1,0,0) node[anchor=north west]{$a_{i+1}$};
+\draw[dashed,tdplot_rotated_coords,->] (0,0,0) -- (0,1,0) node[anchor=west]{$b_{i+1}$};
+
+\end{tikzpicture}
+
+\end{document}
