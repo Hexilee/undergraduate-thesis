@@ -31,7 +31,13 @@
 %set up some coordinates 
 %-----------------------
 \coordinate (O) at (0,0,0) node[anchor=south]{$o(c)$};
-
+\tdplotsetcoord{K}{0.6}{90}{\alphavec};
+\node[label={below:$k_i$}] at (K) {};
+\draw[thick,->] (O) -- (K);
+\draw[dashed] (K) -- (Kx);
+\draw[dashed] (K) -- (Ky);
+\draw[thick,->] (O) -- (Kx) node[anchor=south]{$kx_i$};
+\draw[thick,->] (O) -- (Ky) node[anchor=west]{$ky_i$};
 %draw figure contents
 %--------------------
 
@@ -39,6 +45,9 @@
 \draw[dashed,->] (0,0,0) -- (1,0,0) node[anchor=east]{$x$};
 \draw[dashed,->] (0,0,0) -- (0,1,0) node[anchor=north]{$y$};
 \draw[dashed] (1,0,0) arc (0:\totalvec:1);
+\tdplotdrawarc{(O)}{0.2}{0}{\alphavec}{anchor=east}{$\alpha_i$}
+\tdplotdrawarc{(O)}{0.2}{\alphavec}{\betavec}{anchor=north}{$\phi_{i+1}$}
+\tdplotdrawarc{(O)}{0.4}{0}{\betavec}{anchor=east}{$\alpha_{i+1}$}
 
 %draw the angle \phi, and label it
 %syntax: \tdplotdrawarc[coordinate frame, draw options]{center point}{r}{angle}{label options}{label}
@@ -52,8 +61,8 @@
 \tdplotsetrotatedcoords{\alphavec}{0}{0}
 \tdplotsetrotatedcoordsorigin{(O)}
 
-\draw[thick,tdplot_rotated_coords,->] (0,0,0) -- (1,0,0) node[anchor=north east]{$a_i$};
-\draw[thick,tdplot_rotated_coords,->] (0,0,0) -- (0,1,0) node[anchor=north west]{$b_i$};
+\draw[tdplot_rotated_coords,->] (0,0,0) -- (1,0,0) node[anchor=north east]{$a_i$};
+\draw[tdplot_rotated_coords,->] (0,0,0) -- (0,1,0) node[anchor=north west]{$b_i$};
 
 \tdplotsetrotatedcoords{\betavec}{0}{0}
 \tdplotsetrotatedcoordsorigin{(O)}

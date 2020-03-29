@@ -1,0 +1,109 @@
+\documentclass[tikz]{standalone}
+
+% \documentclass{article}
+
+% \usetikzlibrary{calc,3d,arrows}% tikz package already loaded by 'tikz' option
+\usepackage{tikz-3dplot}
+\usepackage{tikz}   %TikZ is required for this to work.  Make sure this exists before the next line
+
+\usepackage[active,tightpage]{preview}  %generates a tightly fitting border around the work
+
+\PreviewEnvironment{tikzpicture}
+\setlength\PreviewBorder{2mm}
+
+\begin{document}
+
+%Angle Definitions
+%-----------------
+\tdplotsetmaincoords{90}{0}
+
+%define polar coordinates for some vector
+%TODO: look into using 3d spherical coordinate system
+\pgfmathsetmacro{\thetavec}{30}
+\pgfmathsetmacro{\betavec}{15}
+
+
+%start tikz picture, and use the tdplot_main_coords style to implement the display 
+%coordinate transformation provided by 3dplot
+\begin{tikzpicture}[scale=7,tdplot_main_coords]
+
+%set up some coordinates 
+%-----------------------
+\coordinate (O) at (0,0,0) node[anchor=south east]{$o_i$};
+
+\tdplotsetcoord{P}{.8}{90}{0};
+\node[label={below:$p_i$}] at (P) {};
+
+\tdplotsetcoord{O1}{.41}{\betavec}{0};
+\node[anchor=west] at (O1) {$o_{i+1}$};
+
+%determine a coordinate (O1) using (r,\theta,\phi) coordinates.  This command
+%also determines (O1xy), (O1xz), and (O1yz): the xy-, xz-, and yz-projections
+%of the point (O1).
+%syntax: \tdplotsetcoord{Coordinate name without parentheses}{r}{\theta}{\phi}
+%draw figure contents
+%--------------------
+
+%draw the main coordinate system axes
+\draw[thick,->] (0,0,0) -- (1,0,0) node[label={right:$a_i$}]{};
+\draw[thick,->] (0,0,0) -- (0,0,1) node[label={above:$b_i$}]{};
+
+
+%draw theta arc and label, using rotated coordinate system
+% \tdplotdrawarc[tdplot_rotated_coords]{(0,0,0)}{0.5}{0}{\thetavec}{anchor=south west}{$\theta$}
+\draw[dashed] (O1) -- (P);
+
+\tdplotsetthetaplanecoords{0}
+
+\tdplotdrawarc[tdplot_rotated_coords]{(P)}{.8}{-90}{-60}{anchor=west}{$ds$}
+\tdplotdrawarc[tdplot_rotated_coords]{(P)}{.2}{-90}{-60}{anchor=east}{$\theta_i$}
+
+%draw some dashed arcs, demonstrating direct arc drawing
+%\draw[dashed,tdplot_rotated_coords] (\rvec,0,0) arc (0:90:\rvec);
+%\draw[dashed] (\rvec,0,0) arc (0:90:\rvec);
+
+%set the rotated coordinate definition within display using a translation
+%coordinate and Euler angles in the "z(\phi)y(\beta)z(\gamma)" euler rotation convention
+%syntax: \tdplotsetrotatedcoords{\phi}{\beta}{\gamma}
+%\tdplotsetrotatedcoords{\phivec}{\thetavec}{0}
+
+\tdplotsetrotatedcoords{0}{\thetavec}{0}
+\tdplotsetrotatedcoordsorigin{(O1)}
+\begin{scope}[tdplot_rotated_coords]
+    % use the tdplot_rotated_coords style to work in the rotated, translated coordinate frame
+    \draw[dashed,->] (0,0,0) -- (.3,0,0) node[anchor=west]{$a_{i+1}$};
+    \draw[dashed,->] (0,0,0) -- (0,0,.3) node[label={right:$b_{i+1}$}]{};
+
+    \tdplotsetcoord{P1}{.8}{-90}{0};
+    \node[label={below:$p_{i+1}$}] at (P1) {};
+
+    \tdplotsetcoord{O2}{.41}{-15}{0};
+    \node[anchor=west] at (O2) {$o_{i+2}$};
+
+    \draw[dashed] (O1) -- (P1);
+    \draw[dashed] (O2) -- (P1);
+
+    \tdplotsetthetaplanecoords{0}
+    \tdplotdrawarc[tdplot_rotated_coords]{(P1)}{.8}{90}{120}{anchor=east}{$ds$}
+    \tdplotdrawarc[tdplot_rotated_coords]{(P1)}{.2}{90}{120}{anchor=west}{$\theta_{i+1}$}
+\end{scope}
+
+%draw some vector, and its projection, in the rotated coordinate frame
+%\draw[-stealth,color=blue,tdplot_rotated_coords] (0,0,0) -- (.2,.2,.2);
+%\draw[dashed,color=blue,tdplot_rotated_coords] (0,0,0) -- (.2,.2,0);
+%\draw[dashed,color=blue,tdplot_rotated_coords] (.2,.2,0) -- (.2,.2,.2);
+
+%show its phi arc and label
+%\tdplotdrawarc[tdplot_rotated_coords,color=blue]{(0,0,0)}{0.2}{0}{45}{anchor=north west,color=black}{$\phi'$}
+
+%change the rotated coordinate frame so that it lies in its theta plane.
+%Note that this overwrites the original rotated coordinate frame
+%syntax: \tdplotsetrotatedthetaplanecoords{\phi'}
+%\tdplotsetrotatedthetaplanecoords{45}
+
+%draw theta arc and label
+%\tdplotdrawarc[tdplot_rotated_coords,color=blue]{(0,0,0)}{0.2}{0}{55}{anchor=south west,color=black}{$\theta'$}
+
+\end{tikzpicture}
+
+\end{document}
