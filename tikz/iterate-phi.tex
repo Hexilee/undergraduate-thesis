@@ -30,14 +30,14 @@
 
 %set up some coordinates 
 %-----------------------
-\coordinate (O) at (0,0,0) node[anchor=south east]{$o(c)$};
+\coordinate (O) at (0,0,0) node[anchor=south]{$o(c)$};
 
 %draw figure contents
 %--------------------
 
 %draw the main coordinate system axes
-\draw[dashed,->] (0,0,0) -- (1,0,0) node[anchor=north east]{$x$};
-\draw[dashed,->] (0,0,0) -- (0,1,0) node[anchor=north west]{$y$};
+\draw[dashed,->] (0,0,0) -- (1,0,0) node[anchor=east]{$x$};
+\draw[dashed,->] (0,0,0) -- (0,1,0) node[anchor=north]{$y$};
 \draw[dashed] (1,0,0) arc (0:\totalvec:1);
 
 %draw the angle \phi, and label it
@@ -52,14 +52,14 @@
 \tdplotsetrotatedcoords{\alphavec}{0}{0}
 \tdplotsetrotatedcoordsorigin{(O)}
 
-\draw[thick,tdplot_rotated_coords,->] (0,0,0) -- (1,0,0) node[anchor=north west]{$a_i$};
-\draw[thick,tdplot_rotated_coords,->] (0,0,0) -- (0,1,0) node[anchor=west]{$b_i$};
+\draw[thick,tdplot_rotated_coords,->] (0,0,0) -- (1,0,0) node[anchor=north east]{$a_i$};
+\draw[thick,tdplot_rotated_coords,->] (0,0,0) -- (0,1,0) node[anchor=north west]{$b_i$};
 
 \tdplotsetrotatedcoords{\betavec}{0}{0}
 \tdplotsetrotatedcoordsorigin{(O)}
 
-\draw[dashed,tdplot_rotated_coords,->] (0,0,0) -- (1,0,0) node[anchor=north west]{$a_{i+1}$};
-\draw[dashed,tdplot_rotated_coords,->] (0,0,0) -- (0,1,0) node[anchor=west]{$b_{i+1}$};
+\draw[dashed,tdplot_rotated_coords,->] (0,0,0) -- (1,0,0) node[anchor=north east]{$a_{i+1}$};
+\draw[dashed,tdplot_rotated_coords,->] (0,0,0) -- (0,1,0) node[anchor=north west]{$b_{i+1}$};
 
 \end{tikzpicture}
 
