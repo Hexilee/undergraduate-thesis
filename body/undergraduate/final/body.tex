@@ -1,158 +1,256 @@
 \cleardoublepage
 
-形变传感器主要分为两大类，一类是传统形变传感器（Conventional Shape Sensors, CSS），
-另一类是光形变传感器（Fiber Optic Shape Sensors, FOSS）， 
-其中传统形变传感器又分为非接触式和接触式两种。
-
-非接触式传感器包括视觉系统传感器（如相机）、
-无线电监测与测距（Radio Detection and Ranging, RaDAR）
-或光监测与测距（Light Detection and Ranging, LiDAR）传感器，
-这些传感器的性能与正确性受环境温度和污染干扰很大。
-
-随着传感器的需求场景越来越多且复杂，非接触传感系统越来越局限，
-对小型且灵活的接触式传感器的需求也就越来越大。
-接触式传感器可以直接连接到物体上随其移动，
-并将位置转换为光、电信号以感测形状、曲率、弯曲和扭曲。
-
-接触式CSS主要分为电阻压力传感器、光电传感器和微机电系统（Micro-Electo-Mechanical System, MEMS）传感器：
-\begin{itemize}
-    \item 电阻压力传感器适用于消费级电子产品，如游戏用压感器、心率检测仪等。
-    \item 光电传感器适用于通用基础设备，如医疗运动用人体肌肉脊椎形状传感。
-    \item MEMS传感器适用于大型工程，如钻井、海床监控等。
-\end{itemize}
-
-光纤传感的出现让实时确定物体的形态成为了一个很有前景的研究方向。
-FOSS利用光纤传感器（Fiber Optic Sensors, FOS）来实现相对位置测量，
-或是使用嵌入式FOS实现物体形状的测量。
-FOSS被设计用于定向应变测量，例如，
-FOSS可以由三芯光纤布拉格光栅（Fiber Bragg Grating, FBG）传感器平面组成，
-该传感器平面测量应变以进行对象的多维曲率计算，因此可以在计算机模型中用于重建对象的2D和3D形状。
-
-通常，FOSS与CSS相比具有许多明显而实用的优点，例如：
-
-\begin{itemize}
-\item FOSS可以仅由一个远程询问器单元进行监控，而无需布线和连接许多传感器。
-\item 传感器的位置不需要电力，因此可以将其放置在传统手段无法接近的地方，并测量这些部位的应变或弯曲。
-\item 小尺寸的光纤（直径在100μm和2 mm之间）可以被嵌入非常薄的材料、表面、结构中，或者嵌入到杆或小型设备的中心。
-\item 光纤传感器不受外部电磁场的影响。
-\end{itemize}
+\section{曲线重建}
 
 曲线重建主要分为两个部分，一个是连续化，即将离散的数据连续化；
-另一部分是拟合，根据数据拟合得到绝对坐标系下的曲线各点坐标。
+另一部分是重建，根据连续的数据得到绝对坐标系下的曲线各点坐标。
 根据传感器的种类不同，所测得的数据类型不同，这两步工作的执行顺序也可以不同。
 
 如MEMS惯性传感器主要测量加速度数据，并对加速度数据进行二次积分而得到测量点位移，
 故可以在计算测量点坐标之后再进行连续化；而像FBG传感器所得到的是测量点的曲率数据，
-难以直接计算获得该点坐标，必须先对曲率数据进行连续化，然后通过拟合算法计算得出各点的坐标。
+难以直接计算获得该点坐标，必须先对曲率数据进行连续化，然后再计算得出各点的坐标。
 
-本文主要讨论更高精度、基于曲率数据的曲线拟合算法。
+本文主采用更高精度、基于曲率数据的曲线重建方案。故可选用FBG传感器并假定可测得数据为两个正交方向的曲率。
 
+\subsection{连续化}
 图形学上常用的连续化算法（曲线）有贝塞尔（Bezier）曲线、B样条曲线、Catmull Rom样条曲线等；
 而统计学上常用线性插值、多项式插值等。图形学连续化的常见目的是得到光滑曲线，而统计学则追求最小偏差。
 由于“曲率光滑程度对曲线重建结果的影响”尚无理论研究，也超出了本文的研究范围，故本文采用其中最简便的线性插值法。
 
-常用的拟合算法有基于Cartesian坐标系的拟合算法和基于Frenet坐标系的拟合算法。
-其中Cartesian坐标系下的拟合算法拥有更高的拟合精度，而Frenet坐标系下的拟合算法更易于计算。
+\subsection{重建}
+常用的重建算法有基于Cartesian坐标系的拟合算法和基于Frenet坐标系的拟合算法。
+其中Cartesian坐标系下的拟合算法拥有更高精度，而Frenet坐标系下的拟合算法更易于编程计算。
+本文采用Cartesian坐标系。
 
-三维渲染是通过电脑计算的方式把模型从三维模型网格呈现出二维真实感高的图像\cite{3DModels_SurveyPaper}，
-计算过程包含光线及辅助光线、材料的材质和纹理、相机相关设置等综合变量\cite{scientce-of-3d-rendering}。
+\subsubsection{二维曲线}
 
-三维渲染包括实时渲染和非实时渲染，本文主要介绍和使用实时渲染。
+\begin{center}
+    \includepdf[
+        pages=1,
+        scale=0.7,
+        pagecommand={\pagestyle{fancy}},
+    ]{2d-reconst.pdf}
+\end{center}
 
-OpenGL(Open Graphics Library)是一种用于渲染2D或3D图像的跨平台编程接口\cite{opengl}，
-它并不指任何一种特定实现，而是一种接口规范，与之类似的还有仅用于Windows平台的Direct3D。
-它有很多的具体实现和编程语言绑定，如JavaScript绑定的WebGL；
-C绑定的WGL、GLX和CGL；iOS提供的C绑定；Android提供的Java和C绑定。
+如图所示，以曲线的每个$ds$微段的端点$o_i$为原点建立运动坐标系 $o_i-a_ib_i$，其中$b_i$是曲线在$o_i$点的切向量，$a_i$是法向量。
 
-本文使用它的JavaScript绑定。
-
-超文本传输协议\cite{rfc7230}（Hyper-Text Transfer Protocol, HTTP）是一个用于传输超媒体文档（例如 HTML）的应用层协议。
-它是为Web浏览器与Web服务器之间的通信而设计的，但也可以用于其他目的。
-WebSocket（简称WS）是浏览器提供的一种浏览器与服务器进行全双工通讯的网络技术，
-它是一个独立的协议，但支持使用HTTP/1.x握手。
-
-相比于HTTP/1.x，它有如下优点：
-
-\begin{itemize}
-    \item 支持双向通信，实时性更强；
-    \item 更好的二进制支持；
-    \item 较少的控制开销。连接创建后，WS客户端、服务端进行数据交换时，协议控制的数据包头部较小。在不包含头部的情况下，服务端到客户端的包头只有2~10字节（取决于数据包长度），客户端到服务端的的话，需要加上额外的4字节的掩码。而HTTP/1.x每次通信都需要携带完整的头部；
-    \item 支持扩展。WS协议定义了扩展，用户可以扩展协议，或者实现自定义的子协议（比如支持自定义压缩算法等）。
-\end{itemize}
-
-本文使用它进行客户端和服务端的通信。
-
-\section{研究背景}
-
-随着光纤形变传感技术愈发成熟，实时地、准确地获得物体各处的形变信息成为了可能。
-同时，随着行业的发展，医用、工业用光纤形变传感器的落地，形变数据可视化的需求也越来越大。
-然而，并没有学者研究如何去为形变传感器构建一个实时的三维可视化软件。
-
-另一方面，随着互联网革命的持续推进，基于浏览器的图像渲染、数据传输技术逐渐成熟并成为大势所趋。
-一款运行在浏览器上的形变传感器可视化软件是时代浪潮下的最佳选择。
-
-
-
-\section{Overleaf 使用注意事项}
-
-如果你在Overleaf上编译本模板，请注意如下事项：
-
-\begin{itemize}
-    \item 删除根目录的 ``.latexmkrc'' 文件，否则编译失败且不报任何错误
-    \item 字体有版权所以本模板不能附带字体，请务必手动上传字体文件，并在各个专业模板下手动指定字体。
-        具体方法参照 GitHub 主页的说明。
-        {\bfseries 本模板的 Overleaf 版删除了仿宋字体设置，否则会编译超时}。
-    \item 当前（2019年9月2日）的Overleaf使用TexLive 2017进行编译，但一些伪粗体复制乱码的问题需要TexLive 2019版本来解决。
-        所以各位同学可以在Overleaf上编写论文，但务必使用本地的TexLive 2019来进行最终编译，以免产生查重相关问题。
-        具体说明参照 GitHub 主页。
-\end{itemize}
-
-\subsection{节标题}
-
-\subsubsection{小节标题}
-
-\par 我们可以用includegraphics来插入现有的jpg等格式的图片，如\autoref{fig:zju-logo}。
-
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=.4\linewidth]{logo/zju}
-    \caption{\label{fig:zju-logo}浙江大学LOGO}
-\end{figure}
-
-\par 如\autoref{tab:sample}所示，这是一张自动调节列宽的表格。
-
-\begin{table}[ht]
-    \caption{\label{tab:sample}自动调节列宽的表格}
-    \begin{tabularx}{\linewidth}{c|X<{\centering}}
-        \hline
-        第一列 & 第二列 \\ \hline
-        xxx & xxx \\ \hline
-        xxx & xxx \\ \hline
-        xxx & xxx \\ \hline
-    \end{tabularx}
-\end{table}
-
-\par 如\autoref{equ:sample}，这是一个公式
-
+已知微段曲率值为$k_i$，则有：
 \begin{equation}
-    \label{equ:sample}
-    A=\overbrace{(a+b+c)+\underbrace{i(d+e+f)}_{\text{虚数}}}^{\text{复数}}
+\theta_i = ds\cdot k_i
+\end{equation}
+根据几何关系易得：
+
+- 运动坐标系$o_i-a_ib_i$到运动坐标系$o_{i+1}-a_{i+1}b_{i+1}$的旋转矩阵$r_{i, i+1}$满足：
+    \begin{equation}
+    r_{i, i+1} = \left[
+      \begin{matrix}
+      cos \theta_i & sin \theta_i\\
+      -sin \theta_i & cos \theta_i\\
+      \end{matrix}
+    \right]
+    \end{equation}
+    
+- $o_{i+1}$在运动坐标系$o_i-a_ib_i$中的相对坐标$t_{i+1}$满足：
+    \begin{equation}
+    t_{i+1} = \frac{1}{k_i} \cdot \left[
+      \begin{matrix}
+    	1 - cos\theta_i\\
+      sin\theta_i\\
+      \end{matrix}
+    \right]
+    \end{equation}
+    
+
+故可得：
+
+- 绝对坐标系$o_0-a_0b_0$到运动坐标系$o_i-a_ib_i$的旋转矩阵$R_i$满足：
+    \begin{equation}
+    R_i = \prod_{k = 0}^{i-1} r_{k, k+1}
+    \end{equation}
+
+- $o_i$ 到$o_{i+1}$在绝对坐标系中的位移向量$\vec{t_{i+1}}$满足
+    \begin{equation}
+    \vec{t_{i+1}} = Ri^{-1}\cdot t_{i+1}
+    \end{equation}
+    
+- $o_i$在绝对坐标系中的坐标 $T_i$满足：
+    \begin{equation}
+    T_i = \left[
+    		\begin{matrix}
+        0\\
+        0\\
+      	\end{matrix}
+      \right]
+      + \Sigma_{k=1} ^ {i} \vec{t_i}
+    \end{equation}
+    
+至此，我们通过二维曲线上各微段弧长和曲率拟合出了各端点的绝对坐标。
+
+\subsubsection{三维曲线}
+
+\begin{center}
+    \includepdf[
+        pages=1,
+        scale=0.7,
+        pagecommand={\pagestyle{fancy}},
+    ]{coordinate-reconst.pdf}
+\end{center}
+
+
+在三维情况下，我们以曲线的每个$ds$微段的端点$o_i$为原点建立运动坐标系 $o_i-a_ib_ic_i$，其中$c_i$是曲线在$o_i$点的切向量，$a_i$是法向量，$b_i$是副法向量。
+\begin{equation}
+b_i = a_i \times c_i
+\end{equation}
+假设微段合曲率向量为$k_i$，则同样有：
+\begin{equation}
+\theta_i = ds\cdot |k_i|
+\end{equation}
+要求运动坐标系$o_i-a_ib_ic_i$到运动坐标系$o_{i+1}-a_{i+1}b_{i+1}c_{i+1}$的旋转矩阵$r_{i, i+1}$，需先求$k_i$与$a_i$的夹角$\phi_i$。
+
+已知两个曲率分量$kx$和$ky$，将各运动坐标轴的$o-ab$平面叠加可得到下图的$o-xy$平面，其中$x$和$y$分别是两个曲率方向。由于$a$是曲线法向量，故$a_{i+1}$与$k_i$同向，即$a_{i+1}$与$a_{i+2}$的夹角$\phi_{i+1}$是合曲率向量$k_i$与$k_{i+1}$的夹角。
+
+\begin{center}
+    \includepdf[
+        pages=1,
+        scale=0.7,
+        pagecommand={\pagestyle{fancy}},
+    ]{iterate-phi.pdf}
+\end{center}
+
+又由于$x$的方向恒定（不发生扭转的情况下），故有：
+
+\begin{align}
+\phi_{i+1} &= \alpha_{i+1} - \alpha_i \\
+\alpha_i &= arccos\frac{|kx_i|}{|k_i|} \\
+k_i &= kx_i + ky_i \\
+|k_i| &= \sqrt{(kx_i)^2 + (ky_i)^2}
+\end{align}
+
+算得$\phi_i$后可易得：
+
+- 运动坐标系$o_i-a_ib_ic_i$到临时坐标系$o_i'-a_i'b_i'c_i'$的旋转矩阵$r_i'$满足：
+    \begin{equation}
+    r_i' = \left[
+            \begin{matrix}
+            cos\phi_i & -sin\phi_i & 0\\
+            sin\phi_i & cos\phi_i & 0\\
+            0 & 0 & 1\\
+            \end{matrix}
+        \right]
+    \end{equation}
+    
+- 点$o_{i+1}$在临时坐标系$o_i'-a_i'b_i'c_i'$下的相对坐标$o_{i+1}'$满足：
+    \begin{equation}
+    o_{i+1}' = \frac{1}{|k_i|} \cdot \left[
+      \begin{matrix}
+    	1 - cos\theta_i\\
+    	0 \\
+      sin\theta_i\\
+      \end{matrix}
+    \right]
+    \end{equation}
+    
+- 临时坐标系$o_i'-a_i'b_i'c_i'$到运动坐标系$o_{i+1}-a_{i+1}b_{i+1}c_{i+1}$的旋转矩阵$r_{i, i+1}$满足：
+    \begin{equation}
+    r_{i, i+1} = \left[
+      \begin{matrix}
+      cos \theta_i & 0 & -sin \theta_i\\
+      0 &1 & 0\\
+      sin \theta_i & 0 & cos \theta_i\\
+      \end{matrix}
+    \right]
+    \end{equation}
+
+故可得：
+
+- 绝对坐标系$o_0-a_0b_0c_0$到临时坐标系$o_i'-a_i'b_i'c_i'$的旋转矩阵$R_i'$满足：
+    \begin{equation}
+    R_i' = r_i' \cdot \prod_{k = 0}^{i-1} r_k' \cdot r_{k, k+1}
+    \end{equation}
+    
+- $o_i$ 到$o_{i+1}$在绝对坐标系中的位移向量$t_{i+1}$满足：
+    \begin{equation}
+    \vec{t_i} = Ri'^{-1}\cdot o_{i+1}'
+    \end{equation}
+
+- 绝对坐标原点$o_0$ 到$o_i$的位移向量$\vec{T_i}$满足：
+    \begin{equation}
+    \vec{T_i} = \Sigma_{k=1} ^ {i} \vec{t_i}
+    \end{equation}
+
+即$o_i$在绝对坐标系中的坐标 $T_i$满足：
+\begin{equation}
+T_i = \left[
+    \begin{matrix}
+    0\\
+    0\\
+    0\\
+  	\end{matrix}
+  \right]
+  + \Sigma_{k=1} ^ {i} \vec{t_i}
 \end{equation}
 
-\par 如\autoref{code:sample}所示，这是一段代码。
-计算机学院的代码样式可能与其他专业不同，
-如有需要，可以从计算机学院专业模板中复制相关的代码样式设定。
 
-\begin{lstlisting}[%
-    language={C},
-    caption={simple.c},
-    label={code:sample}
-]
-#include <stdio.h>
+\subsubsection{核心算法实现}
+\begin{lstlisting}[language=Rust, style=boxed]
+pub fn reconstruct(&self, mut ai: Vector3<f64>, mut ri: Matrix3<f64>) -> Result<Vec<Point>, &'static str> {
+    let mut points = Vec::with_capacity(self.splines.len()); // define points vector and reserve capacity
+    let mut alpha_last = 0.;
+    for (ka, kb) in self.splines.iter().cloned() {
+        if ka == 0. && kb == 0. {
+            // ka == kb == 0, no rotation, only translation.
 
-int main(int argc, char *argv[])
-{
-    printf("Hello, zjuthesis\n");
-    return 0;
+            // Ti vector, a translation vector.
+            let ti = ri.pseudo_inverse(0.000000001)? * Vector3::new(0., 0., self.ds);
+
+            // ai + ti, to get absolute coordinate of current point
+            ai += ti;
+            let slice = ai.column(0);
+            // push absolute coordinate of current point
+            // println!("(x, y, z): ({}, {}, {})", slice[0], slice[1], slice[2]);
+            points.push(Point {
+                x: slice[0] as f32,
+                y: slice[1] as f32,
+                z: slice[2] as f32,
+            });
+        } else {
+            let k = (ka.powi(2) + kb.powi(2)).sqrt(); // composite curvature
+            let theta = k * self.ds;
+            let alpha = (ka / k).acos();
+            let phi = alpha - alpha_last;
+            alpha_last = alpha;
+
+            let cos_phi = phi.cos();
+            let sin_phi = phi.sin();
+            let cos_theta = theta.cos();
+            let sin_theta = theta.sin();
+
+
+            ri = Matrix3::new(
+                cos_phi, -sin_phi, 0.,
+                sin_phi, cos_phi, 0.,
+                0., 0., 1.,
+            ) * ri;
+
+            // get generalized inverse of ri; then dot product relative coordinate
+            let ti = ri.pseudo_inverse(0.000000001)? * Vector3::new((1. - cos_theta) / k, 0., sin_theta / k);
+            ai += ti;
+            let slice = ai.column(0);
+            // push absolute coordinate of current point
+            // println!("(x, y, z): ({}, {}, {})", slice[0], slice[1], slice[2]);
+            points.push(Point {
+                x: slice[0] as f32,
+                y: slice[1] as f32,
+                z: slice[2] as f32,
+            });
+
+            ri = Matrix3::new(
+                cos_theta, 0., sin_theta,
+                0., 1., 0.,
+                -sin_theta, 0., cos_theta,
+            ) * ri;
+        }
+    }
+    Ok(points)
 }
 \end{lstlisting}
