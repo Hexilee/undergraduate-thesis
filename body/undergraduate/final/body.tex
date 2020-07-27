@@ -24,15 +24,14 @@
 
 \subsubsection{二维曲线}
 
-\begin{center}
-    \includepdf[
-        pages=1,
-        scale=0.7,
-        pagecommand={\pagestyle{fancy}},
-    ]{2d-reconst.pdf}
-\end{center}
+\begin{figure}
+\centering
+\includegraphics{2d-reconst.pdf}
+\caption{基于Cartesian坐标系的二维曲线重建原理}
+\label{fig:2d-reconst} 
+\end{figure}
 
-如图所示，以曲线的每个$ds$微段的端点$o_i$为原点建立运动坐标系 $o_i-a_ib_i$，其中$b_i$是曲线在$o_i$点的切向量，$a_i$是法向量。
+如图~\ref{fig:2d-reconst}所示，以曲线的每个$ds$微段的端点$o_i$为原点建立运动坐标系 $o_i-a_ib_i$，其中$b_i$是曲线在$o_i$点的切向量，$a_i$是法向量。
 
 已知微段曲率值为$k_i$，则有：
 \begin{equation}
@@ -88,13 +87,12 @@
 
 \subsubsection{三维曲线}
 
-\begin{center}
-    \includepdf[
-        pages=1,
-        scale=0.7,
-        pagecommand={\pagestyle{fancy}},
-    ]{coordinate-reconst.pdf}
-\end{center}
+\begin{figure}
+\centering
+\includegraphics{coordinate-reconst.pdf}
+\caption{基于Cartesian坐标系的三维曲线重建原理}
+\label{fig:coordinate-reconst} 
+\end{figure}
 
 
 在三维情况下，我们以曲线的每个$ds$微段的端点$o_i$为原点建立运动坐标系 $o_i-a_ib_ic_i$，其中$c_i$是曲线在$o_i$点的切向量，$a_i$是法向量，$b_i$是副法向量。
@@ -109,13 +107,12 @@ b_i = a_i \times c_i
 
 已知两个曲率分量$kx$和$ky$，将各运动坐标轴的$o-ab$平面叠加可得到下图的$o-xy$平面，其中$x$和$y$分别是两个曲率方向。由于$a$是曲线法向量，故$a_{i+1}$与$k_i$同向，即$a_{i+1}$与$a_{i+2}$的夹角$\phi_{i+1}$是合曲率向量$k_i$与$k_{i+1}$的夹角。
 
-\begin{center}
-    \includepdf[
-        pages=1,
-        scale=0.7,
-        pagecommand={\pagestyle{fancy}},
-    ]{iterate-phi.pdf}
-\end{center}
+\begin{figure}
+\centering
+\includegraphics{iterate-phi.pdf}
+\caption{运动坐标系旋转俯视图}
+\label{fig:iterate-phi} 
+\end{figure}
 
 又由于$x$的方向恒定（不发生扭转的情况下），故有：
 
@@ -257,51 +254,47 @@ pub fn reconstruct(&self, mut ai: Vector3<f64>, mut ri: Matrix3<f64>) -> Result<
 
 \subsection{重建效果与误差分析}
 
-本小结主要内容是重建算法的效果展示与误差传递分析。
-为了便于画图与分析，所用曲线为二维标准余弦曲线。
+本结主要内容是重建算法的效果展示与误差分析。
+为了方便画图和分析，所用曲线为二维标准余弦曲线。
 
 \subsubsection{结果与误差}
 
-\begin{center}
-    \includepdf[
-        pages=1,
-        scale=0.7,
-        pagecommand={\pagestyle{fancy}},
-    ]{cos.pdf}
-\end{center}
 
-\begin{center}
-    \includepdf[
-        pages=1,
-        scale=0.7,
-        pagecommand={\pagestyle{fancy}},
-    ]{cos-error.pdf}
-\end{center}
+\begin{figure}
+\centering
+\includegraphics{cos.pdf}
+\caption{余弦曲线重建结果}
+\label{fig:cos}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{cos-error.pdf}
+\caption{余弦曲线重建误差}
+\label{fig:cos-error}
+\end{figure}
 
 \subsubsection{不同步长下的误差}
 
-\begin{center}
-    \includepdf[
-        pages=1,
-        scale=0.7,
-        pagecommand={\pagestyle{fancy}},
-    ]{cos-diff-step.pdf}
-\end{center}
+\begin{figure}
+\centering
+\includegraphics{cos-diff-step.pdf}
+\caption{不同步长下的重建结果}
+\label{fig:cos-diff-step}
+\end{figure}
 
 \subsubsection{误差传递}
 
-\begin{center}
-    \includepdf[
-        pages=1,
-        scale=0.7,
-        pagecommand={\pagestyle{fancy}},
-    ]{cos-single-error.pdf}
-\end{center}
+\begin{figure}
+\centering
+\includegraphics{cos-single-error.pdf}
+\caption{单点误差的传递}
+\label{fig:cos-single-error}
+\end{figure}
 
-\begin{center}
-    \includepdf[
-        pages=1,
-        scale=0.7,
-        pagecommand={\pagestyle{fancy}},
-    ]{cos-multiple-error.pdf}
-\end{center}
+\begin{figure}
+\centering
+\includegraphics{cos-multiple-error.pdf}
+\caption{多点误差的传递}
+\label{fig:cos-multiple-error}
+\end{figure}
