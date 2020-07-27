@@ -254,3 +254,54 @@ pub fn reconstruct(&self, mut ai: Vector3<f64>, mut ri: Matrix3<f64>) -> Result<
     Ok(points)
 }
 \end{lstlisting}
+
+\subsection{重建效果与误差分析}
+
+本小结主要内容是重建算法的效果展示与误差传递分析。
+为了便于画图与分析，所用曲线为二维标准余弦曲线。
+
+\subsubsection{结果与误差}
+
+\begin{center}
+    \includepdf[
+        pages=1,
+        scale=0.7,
+        pagecommand={\pagestyle{fancy}},
+    ]{cos.pdf}
+\end{center}
+
+\begin{center}
+    \includepdf[
+        pages=1,
+        scale=0.7,
+        pagecommand={\pagestyle{fancy}},
+    ]{cos-error.pdf}
+\end{center}
+
+\subsubsection{不同步长下的误差}
+
+\begin{center}
+    \includepdf[
+        pages=1,
+        scale=0.7,
+        pagecommand={\pagestyle{fancy}},
+    ]{cos-diff-step.pdf}
+\end{center}
+
+\subsubsection{误差传递}
+
+\begin{center}
+    \includepdf[
+        pages=1,
+        scale=0.7,
+        pagecommand={\pagestyle{fancy}},
+    ]{cos-single-error.pdf}
+\end{center}
+
+\begin{center}
+    \includepdf[
+        pages=1,
+        scale=0.7,
+        pagecommand={\pagestyle{fancy}},
+    ]{cos-multiple-error.pdf}
+\end{center}
