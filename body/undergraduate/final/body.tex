@@ -342,3 +342,50 @@ pub fn reconstruct(&self, mut ai: Vector3<f64>, mut ri: Matrix3<f64>) -> Result<
 \caption{多点误差的传递}
 \label{fig:cos-multiple-error}
 \end{figure}
+
+\section{数据传输}
+数据传输也主要分为两个部分：一是传感客户端到服务端的原始数据上推流；二是服务器到渲染客户端的重建数据下推流。
+本文的数据传输采用 WebSocket on HTTPS，全程加密，流式传输，安全高效。
+
+\subsection{原始数据上推流}
+
+原始数据上推客户端一般运行在一台直接接收传感器数据的机器上，至少需要支持网络栈上的TCP协议。
+推荐使用一台运行Linux系统的树莓派。
+
+首先，客户端对服务器端发起一个WebSocket请求：
+
+\begin{lstlisting}
+websocket wss://host:port/upstream/
+\end{lstlisting}
+
+连接建立之后服务器端给客户端发一个确认包，以告知注册的频道$id$。
+
+\begin{lstlisting}[language=json,firstnumber=1]
+{
+    "id": 1
+}
+\end{lstlisting}
+
+我们采用JSON作为主要的数据传输序列化格式，这段数据告诉客户端注册的频道$id$为$1$，数据上推准备已完成。
+
+原始数据上推流中的一份数据样例如下：
+
+\begin{lstlisting}[language=json,firstnumber=1]
+{
+    "ds": 0.01,
+    "samples": [
+        [0, 0, 0],
+        [4.66, 0.21, 0],
+        [9.36, 0.27, 0],
+        [14.82, 0.086, 0],
+        [19.72, -0.0093, 0],
+        [24.74, -0.091, 0],
+        [29.95, -0.079, 0]
+    ]
+}
+\end{lstlisting}
+
+其中 $d_s$ 为客户端建议的插值步长，
+$samples$ 数组内的每个元素都是一个三元组，其中三个数据分别代表与原点的距离$s$、$a$方向的曲率$k_a$和$b$方向的曲率$k_b$。
+
+\subsection{重建数据下推流}
