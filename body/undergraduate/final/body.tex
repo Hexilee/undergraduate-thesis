@@ -95,7 +95,7 @@
 \end{figure}
 
 
-在三维情况下，我们以曲线的每个$ds$微段的端点$o_i$为原点建立运动坐标系 $o_i-a_ib_ic_i$，其中$c_i$是曲线在$o_i$点的切向量，$a_i$是法向量，$b_i$是副法向量。
+如图 ~\ref{fig:coordinate-reconst} 所示，在三维情况下，我们以曲线的每个$ds$微段的端点$o_i$为原点建立运动坐标系 $o_i-a_ib_ic_i$，其中$c_i$是曲线在$o_i$点的切向量，$a_i$是法向量，$b_i$是副法向量。
 \begin{equation}
 b_i = a_i \times c_i
 \end{equation}
@@ -259,6 +259,11 @@ pub fn reconstruct(&self, mut ai: Vector3<f64>, mut ri: Matrix3<f64>) -> Result<
 
 \subsubsection{结果与误差}
 
+图 ~\ref{fig:cos} 为标准余弦曲线与插值步长为$0.01$时的重建结果的对比图。
+图 ~\ref{fig:cos-error} 展示了根据横坐标$x$变化的重建误差，误差定义为两曲线$y$轴坐标之差的绝对值。
+
+由图可知标准余弦曲线一个周期内的重建误差都在$0.05$以内。
+
 
 \begin{figure}
 \centering
@@ -276,6 +281,12 @@ pub fn reconstruct(&self, mut ai: Vector3<f64>, mut ri: Matrix3<f64>) -> Result<
 
 \subsubsection{不同步长下的误差}
 
+图 ~\ref{fig:cos-diff-step} 为标准余弦曲线与不同插值步长的重建结果的对比图。
+图 ~\ref{fig:cos-diff-step-error} 展示了横坐标$x$变化下不同插值步长的重建误差。
+
+可知步长越小重建误差越小，但步长从$0.01$减少到$0.001$带来的准确性提升并不是很明显，却增加了十倍的计算负担，
+故可认为$0.01$为最适插值步长。
+
 \begin{figure}
 \centering
 \includegraphics{cos-diff-step.pdf}
@@ -283,13 +294,46 @@ pub fn reconstruct(&self, mut ai: Vector3<f64>, mut ri: Matrix3<f64>) -> Result<
 \label{fig:cos-diff-step}
 \end{figure}
 
+\begin{figure}
+\centering
+\includegraphics{cos-diff-step-error.pdf}
+\caption{不同步长下的重建误差}
+\label{fig:cos-diff-step-error}
+\end{figure}
+
 \subsubsection{误差传递}
+
+图 ~\ref{fig:cos-single-error-view} 为$x = \frac{\pi}{4}$处加入不同曲率数据误差的重建结果，曲率误差的定义为原始曲率的倍数。
+图 ~\ref{fig:cos-single-error} 展示了横坐标$x$变化下加入单点曲率误差的的重建误差传递。
+
+可知单点曲率误差越大重建误差也越大，
+且每增加$0.1$倍的曲率误差对重建结果的影响都是巨大的，故原始曲率数据的准确性十分重要。
+
+\begin{figure}
+\centering
+\includegraphics{cos-single-error-view.pdf}
+\caption{加入单点误差的重建结果}
+\label{fig:cos-single-error-view}
+\end{figure}
 
 \begin{figure}
 \centering
 \includegraphics{cos-single-error.pdf}
 \caption{单点误差的传递}
 \label{fig:cos-single-error}
+\end{figure}
+
+图 ~\ref{fig:cos-multiple-error-view} 为曲线上多点分别加入$1.2$曲率数据误差的重建结果。
+图 ~\ref{fig:cos-multiple-error} 展示了横坐标$x$变化下分别加入多点曲率误差的的重建误差传递。
+
+可知$s=4.672$处引入曲率误差对重建结果的影响最小，而$s=0.000$处引入对整体曲线影响最大，
+但$s=3.820$处引入对后半段曲线的重建结果影响最大，总体来说没什么规律可循。
+
+\begin{figure}
+\centering
+\includegraphics{cos-multiple-error-view.pdf}
+\caption{加入多点误差的重建结果}
+\label{fig:cos-multiple-error-view}
 \end{figure}
 
 \begin{figure}
