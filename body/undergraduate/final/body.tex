@@ -95,7 +95,7 @@
 \end{figure}
 
 
-如图 ~\ref{fig:coordinate-reconst} 所示，在三维情况下，我们以曲线的每个$ds$微段的端点$o_i$为原点建立运动坐标系 $o_i-a_ib_ic_i$，其中$c_i$是曲线在$o_i$点的切向量，$a_i$是法向量，$b_i$是副法向量。
+如图 ~\ref{fig:coordinate-reconst} 所示，在三维情况下，我们以曲线的每个$ds$微段的端点$o_i$为原点建立运动坐标系\cite{three-dimensional-curve} $o_i-a_ib_ic_i$，其中$c_i$是曲线在$o_i$点的切向量，$a_i$是法向量，$b_i$是副法向量。
 \begin{equation}
 b_i = a_i \times c_i
 \end{equation}
@@ -175,7 +175,7 @@ k_i &= kx_i + ky_i \\
     \vec{T_i} = \Sigma_{k=1} ^ {i} \vec{t_i}
     \end{equation}
 
-即$o_i$在绝对坐标系中的坐标 $T_i$满足：
+即$o_i$在绝对坐标系中的坐标 $T_i$满足\cite{用于光纤光栅曲线重建算法的坐标点拟合}：
 \begin{equation}
 T_i = \left[
     \begin{matrix}
@@ -283,6 +283,38 @@ T_i = \left[
 \section{数据传输}
 数据传输也主要分为两个部分：一是传感客户端到服务端的原始数据上推流；二是服务器到渲染客户端的重建数据下推流。
 本文的数据传输采用 WebSocket on HTTPS，全程加密，流式传输，安全高效。
+
+WebSocket\cite{rfc6455}（简称WS）是浏览器提供的一种与服务器进行全双工通讯的网络技术，
+它是一个独立的协议，但支持使用HTTP/1.x\cite{rfc7230}握手。
+
+相比于HTTP/1.x，它有如下优点：
+
+\begin{itemize}
+    \item 支持双向通信，实时性更强；
+    \item 更好的二进制支持；
+    \item 较少的控制开销。连接创建后，WS客户端、服务端进行数据交换时，协议控制的数据包头部较小。在不包含头部的情况下，服务端到客户端的包头只有2~10字节（取决于数据包长度），客户端到服务端的的话，需要加上额外的4字节的掩码。而HTTP/1.x每次通信都需要携带完整的头部；
+    \item 支持扩展。WS协议定义了扩展，用户可以扩展协议，或者实现自定义的子协议（比如支持自定义压缩算法等）。
+\end{itemize}
+
+超文本传输协议\cite{rfc7230}（Hyper-Text Transfer Protocol, HTTP）默认基于传输控制协议\cite{rfc793}（Transmission Control Protocol, TCP），
+而TCP是明文传输且无验证机制的，其存在三大风险：
+
+\begin{enumerate}
+    \item 窃听风险（eavesdropping）：第三方可以获知通信内容；
+    \item 篡改风险（tampering）：第三方可以修改通信内容；
+    \item 冒充风险（pretending）：第三方可以冒充他人身份参与通信（中间人攻击）。
+\end{enumerate}
+
+传输层安全协议\cite{rfc8446}（Transport Layer Security, TLS）是为了解决这三大风险而设计的，其设计目标是：
+
+\begin{enumerate}
+    \item 所有信息都是加密传播，第三方无法窃听；
+    \item 具有校验机制，一旦被篡改，通信双方会立刻发现；
+    \item 配备身份证书，防止身份被冒充。
+\end{enumerate}
+
+TLS是介于TCP协议和上层应用协议之间的安全层，其作用机理是基于TCP连接建立安全的TLS连接，
+再基于TLS连接实现上层协议。基于TLS的HTTP被称为HTTPS。
 
 \subsection{原始数据上推流}
 
