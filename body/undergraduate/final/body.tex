@@ -187,70 +187,7 @@ T_i = \left[
   + \Sigma_{k=1} ^ {i} \vec{t_i}
 \end{equation}
 
-
-\subsubsection{核心算法实现}
-\begin{lstlisting}[language=Rust, style=boxed]
-pub fn reconstruct(&self, mut ai: Vector3<f64>, mut ri: Matrix3<f64>) -> Result<Vec<Point>, &'static str> {
-    let mut points = Vec::with_capacity(self.splines.len()); // define points vector and reserve capacity
-    let mut alpha_last = 0.;
-    for (ka, kb) in self.splines.iter().cloned() {
-        if ka == 0. && kb == 0. {
-            // ka == kb == 0, no rotation, only translation.
-
-            // Ti vector, a translation vector.
-            let ti = ri.pseudo_inverse(0.000000001)? * Vector3::new(0., 0., self.ds);
-
-            // ai + ti, to get absolute coordinate of current point
-            ai += ti;
-            let slice = ai.column(0);
-            // push absolute coordinate of current point
-            // println!("(x, y, z): ({}, {}, {})", slice[0], slice[1], slice[2]);
-            points.push(Point {
-                x: slice[0] as f32,
-                y: slice[1] as f32,
-                z: slice[2] as f32,
-            });
-        } else {
-            let k = (ka.powi(2) + kb.powi(2)).sqrt(); // composite curvature
-            let theta = k * self.ds;
-            let alpha = (ka / k).acos();
-            let phi = alpha - alpha_last;
-            alpha_last = alpha;
-
-            let cos_phi = phi.cos();
-            let sin_phi = phi.sin();
-            let cos_theta = theta.cos();
-            let sin_theta = theta.sin();
-
-
-            ri = Matrix3::new(
-                cos_phi, -sin_phi, 0.,
-                sin_phi, cos_phi, 0.,
-                0., 0., 1.,
-            ) * ri;
-
-            // get generalized inverse of ri; then dot product relative coordinate
-            let ti = ri.pseudo_inverse(0.000000001)? * Vector3::new((1. - cos_theta) / k, 0., sin_theta / k);
-            ai += ti;
-            let slice = ai.column(0);
-            // push absolute coordinate of current point
-            // println!("(x, y, z): ({}, {}, {})", slice[0], slice[1], slice[2]);
-            points.push(Point {
-                x: slice[0] as f32,
-                y: slice[1] as f32,
-                z: slice[2] as f32,
-            });
-
-            ri = Matrix3::new(
-                cos_theta, 0., sin_theta,
-                0., 1., 0.,
-                -sin_theta, 0., cos_theta,
-            ) * ri;
-        }
-    }
-    Ok(points)
-}
-\end{lstlisting}
+\subsubsection{核心重建算法实现}
 
 \subsection{重建效果与误差分析}
 
@@ -426,3 +363,155 @@ URI中的$:id$为频道$id$，在上推客户端注册时获得。
 
 其中$timestamp$是数据产生时的时间戳，$points$数组内的每个元素都是一个三元组，
 三个数分别是$x$轴、$y$轴和$z$轴的坐标。
+
+\section{三维渲染}
+
+三维渲染采用WebGL渲染引擎和Threejs库，主要功能是根据服务器下推的点列实时渲染管壁或轴线。
+
+\subsection{轴线渲染}
+
+首先根据下推的点列拟合一条Catmull Rom曲线：
+
+\begin{lstlisting}[language=JavaScript,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=left,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b]
+
+socket.addEventListener('message', event => {
+    if (event.data instanceof Blob) {
+        event.data.arrayBuffer().then(buffer => {
+            let json = inflateRaw(new Uint8Array(buffer), { to: 'string' })
+            let data = JSON.parse(json) as Curve
+            curve = new THREE.CatmullRomCurve3(data.points.map(
+                ({ x, y, z }) => (new Vector3(x, y, z)),
+            ))
+        }).catch(err => {
+            console.log(err)
+        })
+    }
+})
+\end{lstlisting}
+
+再定义基础线材质，根据曲线和材质渲染形状并填入缓冲形状：
+
+\begin{lstlisting}[language=JavaScript,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=left,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b]
+const material = new THREE.LineBasicMaterial()
+const bufGeometry = new THREE.BufferGeometry()
+export const object = new THREE.Line(bufGeometry, material)
+export const update = () => {
+    material.setValues({color: config.color})
+    if (curve !== null) {
+        bufGeometry.setFromPoints(curve.getPoints(100))
+    }
+}
+\end{lstlisting}
+
+\subsection{管壁渲染}
+
+管壁渲染基于同样的Catmull Rom曲线，但使用网格材质，双边渲染，反光度$100$：
+
+\begin{lstlisting}[language=JavaScript,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=left,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b]
+const material = new THREE.MeshPhongMaterial({
+    shininess: 100,
+    side: THREE.DoubleSide,
+})
+const bufGeometry = new THREE.BufferGeometry()
+export const object = new THREE.Mesh(bufGeometry, material)
+export const update = () => {
+    material.setValues({color: config.color})
+    if (curve !== null) {
+        let geometry = new THREE.TubeGeometry(
+            curve,
+            64,
+            0.1,
+        )
+        bufGeometry.fromGeometry(geometry)
+        geometry.dispose()
+    }
+}
+\end{lstlisting}
+
+\subsection{控制器}
+
+主要使用的控制器为轨道控制器，绕原点旋转，启用阻尼：
+
+\begin{lstlisting}[language=JavaScript,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=left,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b]
+const orbitControls = new OrbitControls(camera, renderer.domElement)
+orbitControls.target = new THREE.Vector3(0, 0, 0)
+orbitControls.autoRotate = false
+orbitControls.enableDamping = true
+orbitControls.dampingFactor = 0.05
+\end{lstlisting}
+
+\subsection{环境光}
+
+环境光使用了一个颜色为$\#111111$的全局光和一个颜色为$\#505050$的点光源。
+
+\begin{lstlisting}[language=JavaScript,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=left,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b]
+scene.add(new THREE.AmbientLight(0x111111))
+let spotLight = new THREE.DirectionalLight(0x505050, 1.5)
+spotLight.position.set(0, 1000, 0)
+spotLight.castShadow = true
+spotLight.shadow.camera.near = 3
+spotLight.shadow.camera.far = 10
+spotLight.shadow.mapSize.width = 1024
+spotLight.shadow.mapSize.height = 1024
+scene.add(spotLight)
+\end{lstlisting}
