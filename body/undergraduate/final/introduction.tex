@@ -10,16 +10,11 @@ FOSS可以由三芯光纤布拉格光栅（Fiber Bragg Grating, FBG）传感器�
 该传感器平面测量应变以进行对象的多维曲率计算，可以在计算机模型中用于重建对象的2D和3D形状。
 然而，并没有学者研究过如何为形变传感器构建一个通用的三维可视化软件。
 
-另一方面，随着互联网革命的持续推进，基于浏览器的图像渲染、数据传输技术逐渐成熟并成为大势所趋。
-一款运行在浏览器上的形变传感器可视化软件是时代浪潮下的最佳选择。
+另一方面，随着软件工程的发展，有无数种编程语言和渲染技术诞生，从中选择合适的技术栈成为了一大难题。
+单是OpenGL就有JavaScript绑定的WebGL；C绑定的WGL、GLX和CGL；iOS提供的C绑定和Android提供的Java和C绑定等。
 
-构建运行在浏览器上的可视化软件需要考虑以下几个问题：
-
-\begin{itemize}
-\item 如何通过传感器获取的数据重建出曲线的空间各点坐标？
-\item 如何根据各点坐标渲染出3D图形？
-\item 又如何将服务端重建的点坐标安全又实时地传输到客户端渲染程序？
-\end{itemize}
+而随着互联网革命的持续推进，基于浏览器的图像渲染、数据传输技术逐渐成熟并成为大势所趋。
+一款运行在浏览器上的形变传感器可视化软件绝对是时代浪潮下的最佳选择。
 
 \subsection{国内外研究现状}
 
@@ -39,7 +34,7 @@ FOSS可以由三芯光纤布拉格光栅（Fiber Bragg Grating, FBG）传感器�
 
 FOSS利用光纤传感器（Fiber Optic Sensors, FOS）来实现相对位置测量，
 或是使用嵌入式FOS实现物体形状的测量。
-FOS的发展趋势如下表\cite{recent-dev-in-foss}：
+FOS的发展趋势如表 ~\ref{table:foss} \cite{recent-dev-in-foss}。
 
 \begin{table}[!htbp]\small
 \begin{center}
@@ -103,8 +98,9 @@ FOS的发展趋势如下表\cite{recent-dev-in-foss}：
 \\
 \bottomrule
 \end{tabular}
-\caption{FOSS的发展趋势}
 \end{center}
+\caption{FOSS的发展趋势}
+\label{table:foss}
 \end{table}
 
 \subsubsection{曲线重建算法的研究}
@@ -349,7 +345,7 @@ FOS的发展趋势如下表\cite{recent-dev-in-foss}：
 
         通过此变换矩阵即可求得每个点的运动坐标系和下个点的相对坐标，再通过变换矩阵的逆矩阵求得绝对坐标\cite{FBG-sensor-devices}，最终拟合出曲线。
     \end{enumerate}
-    
+
 \end{itemize}
 
 \subsubsection{三维渲染技术}
@@ -550,3 +546,19 @@ FOS的发展趋势如下表\cite{recent-dev-in-foss}：
     基于TLS的应用层协议都会在原本的协议名后加一个 “S”，如HTTPS、FTPS等，表示此连接是安全的。
 
 \end{itemize}
+
+\subsection{本文研究的内容}
+
+构建运行在浏览器上的可视化软件需要考虑以下几个问题：
+
+\begin{itemize}
+\item 如何通过传感器获取的数据重建出曲线的空间各点坐标？
+\item 如何根据各点坐标渲染出3D图形？
+\item 又如何将服务端重建的点坐标安全又实时地传输到客户端渲染程序？
+\end{itemize}
+
+本文提出了一种结合Cartesian坐标系和Frenet标架上两种重建算法的改良算法，
+兼具重建精度高和运行速度快的优点，并给出了其在Rust编程语言上的实现。
+
+另外，本文根据HTTPS和WebSocket实现了全套的前后端数据传输，
+并基于OpenGL和Threejs构建了运行在浏览器上的渲染程序。
