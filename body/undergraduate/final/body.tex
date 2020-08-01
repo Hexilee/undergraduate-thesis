@@ -25,7 +25,7 @@
 
 \subsection{二维曲线}
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics{2d-reconst.pdf}
 \caption{基于Cartesian坐标系的二维曲线重建原理}
@@ -40,7 +40,7 @@
 \end{equation}
 根据几何关系易得：
 
-- 运动坐标系$o_i-a_ib_i$到运动坐标系$o_{i+1}-a_{i+1}b_{i+1}$的旋转矩阵$r_{i, i+1}$满足：
+运动坐标系$o_i-a_ib_i$到运动坐标系$o_{i+1}-a_{i+1}b_{i+1}$的旋转矩阵$r_{i, i+1}$满足：
     \begin{equation}
     r_{i, i+1} = \left[
       \begin{matrix}
@@ -50,7 +50,7 @@
     \right]
     \end{equation}
     
-- $o_{i+1}$在运动坐标系$o_i-a_ib_i$中的相对坐标$t_{i+1}$满足：
+$o_{i+1}$在运动坐标系$o_i-a_ib_i$中的相对坐标$t_{i+1}$满足：
     \begin{equation}
     t_{i+1} = \frac{1}{k_i} \cdot \left[
       \begin{matrix}
@@ -63,17 +63,17 @@
 
 故可得：
 
-- 绝对坐标系$o_0-a_0b_0$到运动坐标系$o_i-a_ib_i$的旋转矩阵$R_i$满足：
+绝对坐标系$o_0-a_0b_0$到运动坐标系$o_i-a_ib_i$的旋转矩阵$R_i$满足：
     \begin{equation}
     R_i = \prod_{k = 0}^{i-1} r_{k, k+1}
     \end{equation}
 
-- $o_i$ 到$o_{i+1}$在绝对坐标系中的位移向量$\vec{t_{i+1}}$满足
+$o_i$ 到$o_{i+1}$在绝对坐标系中的位移向量$\vec{t_{i+1}}$满足
     \begin{equation}
     \vec{t_{i+1}} = Ri^{-1}\cdot t_{i+1}
     \end{equation}
     
-- $o_i$在绝对坐标系中的坐标 $T_i$满足：
+$o_i$在绝对坐标系中的坐标 $T_i$满足：
     \begin{equation}
     T_i = \left[
     		\begin{matrix}
@@ -88,7 +88,7 @@
 
 \subsection{三维曲线}
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics{coordinate-reconst.pdf}
 \caption{基于Cartesian坐标系的三维曲线重建原理}
@@ -112,7 +112,7 @@ b_i = a_i \times c_i
 
 已知两个曲率分量$kx$和$ky$，将各运动坐标轴的$o-ab$平面叠加可得到下图的$o-xy$平面，其中$x$和$y$分别是两个曲率方向。由于$a$是曲线法向量，故$a_{i+1}$与$k_i$同向，即$a_{i+1}$与$a_{i+2}$的夹角$\phi_{i+1}$是合曲率向量$k_i$与$k_{i+1}$的夹角。
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics{iterate-phi.pdf}
 \caption{运动坐标系旋转俯视图}
@@ -130,7 +130,7 @@ k_i &= kx_i + ky_i \\
 
 算得$\phi_i$后可易得：
 
-- 运动坐标系$o_i-a_ib_ic_i$到临时坐标系$o_i'-a_i'b_i'c_i'$的旋转矩阵$r_i'$满足：
+运动坐标系$o_i-a_ib_ic_i$到临时坐标系$o_i'-a_i'b_i'c_i'$的旋转矩阵$r_i'$满足：
     \begin{equation}
     r_i' = \left[
             \begin{matrix}
@@ -141,7 +141,7 @@ k_i &= kx_i + ky_i \\
         \right]
     \end{equation}
     
-- 点$o_{i+1}$在临时坐标系$o_i'-a_i'b_i'c_i'$下的相对坐标$o_{i+1}'$满足：
+点$o_{i+1}$在临时坐标系$o_i'-a_i'b_i'c_i'$下的相对坐标$o_{i+1}'$满足：
     \begin{equation}
     o_{i+1}' = \frac{1}{|k_i|} \cdot \left[
       \begin{matrix}
@@ -152,7 +152,7 @@ k_i &= kx_i + ky_i \\
     \right]
     \end{equation}
     
-- 临时坐标系$o_i'-a_i'b_i'c_i'$到运动坐标系$o_{i+1}-a_{i+1}b_{i+1}c_{i+1}$的旋转矩阵$r_{i, i+1}$满足：
+临时坐标系$o_i'-a_i'b_i'c_i'$到运动坐标系$o_{i+1}-a_{i+1}b_{i+1}c_{i+1}$的旋转矩阵$r_{i, i+1}$满足：
     \begin{equation}
     r_{i, i+1} = \left[
       \begin{matrix}
@@ -165,17 +165,17 @@ k_i &= kx_i + ky_i \\
 
 故可得：
 
-- 绝对坐标系$o_0-a_0b_0c_0$到临时坐标系$o_i'-a_i'b_i'c_i'$的旋转矩阵$R_i'$满足：
+绝对坐标系$o_0-a_0b_0c_0$到临时坐标系$o_i'-a_i'b_i'c_i'$的旋转矩阵$R_i'$满足：
     \begin{equation}
     R_i' = r_i' \cdot \prod_{k = 0}^{i-1} r_k' \cdot r_{k, k+1}
     \end{equation}
     
-- $o_i$ 到$o_{i+1}$在绝对坐标系中的位移向量$t_{i+1}$满足：
+$o_i$ 到$o_{i+1}$在绝对坐标系中的位移向量$t_{i+1}$满足：
     \begin{equation}
     \vec{t_i} = Ri'^{-1}\cdot o_{i+1}'
     \end{equation}
 
-- 绝对坐标原点$o_0$ 到$o_i$的位移向量$\vec{T_i}$满足：
+绝对坐标原点$o_0$ 到$o_i$的位移向量$\vec{T_i}$满足：
     \begin{equation}
     \vec{T_i} = \Sigma_{k=1} ^ {i} \vec{t_i}
     \end{equation}
@@ -205,14 +205,14 @@ T_i = \left[
 由图可知标准余弦曲线一个周期内的重建误差都在$0.05$以内。
 
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics{cos.pdf}
 \caption{余弦曲线重建结果}
 \label{fig:cos}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics{cos-error.pdf}
 \caption{余弦曲线重建误差}
@@ -227,14 +227,14 @@ T_i = \left[
 可知步长越小重建误差越小，但步长从$0.01$减少到$0.001$带来的准确性提升并不是很明显，却增加了十倍的计算负担，
 故可认为$0.01$为最适插值步长。
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics{cos-diff-step.pdf}
 \caption{不同步长下的重建结果}
 \label{fig:cos-diff-step}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics{cos-diff-step-error.pdf}
 \caption{不同步长下的重建误差}
@@ -249,14 +249,14 @@ T_i = \left[
 可知单点曲率误差越大重建误差也越大，
 且每增加$0.1$倍的曲率误差对重建结果的影响都是巨大的，故原始曲率数据的准确性十分重要。
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics{cos-single-error-view.pdf}
 \caption{加入单点误差的重建结果}
 \label{fig:cos-single-error-view}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics{cos-single-error.pdf}
 \caption{单点误差的传递}
@@ -269,14 +269,14 @@ T_i = \left[
 可知$s=4.672$处引入曲率误差对重建结果的影响最小，而$s=0.000$处引入对整体曲线影响最大，
 但$s=3.820$处引入对后半段曲线的重建结果影响最大，总体来说没什么规律可循。
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics{cos-multiple-error-view.pdf}
 \caption{加入多点误差的重建结果}
 \label{fig:cos-multiple-error-view}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics{cos-multiple-error.pdf}
 \caption{多点误差的传递}
