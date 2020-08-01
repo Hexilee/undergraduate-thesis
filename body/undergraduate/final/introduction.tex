@@ -561,4 +561,184 @@ FOS的发展趋势如表 ~\ref{table:foss} \cite{recent-dev-in-foss}。
 兼具重建精度高和运行速度快的优点，并给出了其在Rust编程语言上的实现。
 
 另外，本文根据HTTPS和WebSocket实现了全套的前后端数据传输，
-并基于OpenGL和Threejs构建了运行在浏览器上的渲染程序。
+并基于OpenGL和Threejs构建了运行在浏览器上的通用渲染程序，
+任何能够直接或间接测量两个正交方向的曲率的传感器均可使用该程序实现曲线实时可视化。
+
+本结主要介绍改良的重建算法和曲线重建可视化的理论步骤，具体的软件构建方案将在后面三章中介绍。
+
+\subsubsection{改良重建算法}
+
+在介绍改良算法之前，本文先简要介绍Cartesian坐标系二维情况下的曲线重建算法。
+
+\begin{itemize}
+
+\item \textbf{二维曲线} \\
+
+\begin{figure}[H]
+\centering
+\includegraphics{2d-reconst.pdf}
+\caption{基于Cartesian坐标系的二维曲线重建原理}
+\label{fig:2d-reconst} 
+\end{figure}
+
+如图~\ref{fig:2d-reconst}所示，以曲线的每个$ds$微段的端点$o_i$为原点建立运动坐标系 $o_i-a_ib_i$，其中$b_i$是曲线在$o_i$点的切向量，$a_i$是法向量。
+
+已知微段曲率值为$k_i$，则有：
+\begin{equation}
+\theta_i = ds\cdot k_i
+\end{equation}
+根据几何关系易得：
+
+运动坐标系$o_i-a_ib_i$到运动坐标系$o_{i+1}-a_{i+1}b_{i+1}$的旋转矩阵$r_{i, i+1}$满足：
+    \begin{equation}
+    r_{i, i+1} = \left[
+      \begin{matrix}
+      cos \theta_i & sin \theta_i\\
+      -sin \theta_i & cos \theta_i\\
+      \end{matrix}
+    \right]
+    \end{equation}
+    
+$o_{i+1}$在运动坐标系$o_i-a_ib_i$中的相对坐标$t_{i+1}$满足：
+    \begin{equation}
+    t_{i+1} = \frac{1}{k_i} \cdot \left[
+      \begin{matrix}
+    	1 - cos\theta_i\\
+      sin\theta_i\\
+      \end{matrix}
+    \right]
+    \end{equation}
+    
+
+故可得：
+
+绝对坐标系$o_0-a_0b_0$到运动坐标系$o_i-a_ib_i$的旋转矩阵$R_i$满足：
+    \begin{equation}
+    R_i = \prod_{k = 0}^{i-1} r_{k, k+1}
+    \end{equation}
+
+$o_i$ 到$o_{i+1}$在绝对坐标系中的位移向量$\vec{t_{i+1}}$满足
+    \begin{equation}
+    \vec{t_{i+1}} = Ri^{-1}\cdot t_{i+1}
+    \end{equation}
+    
+$o_i$在绝对坐标系中的坐标 $T_i$满足：
+    \begin{equation}
+    T_i = \left[
+    		\begin{matrix}
+        0\\
+        0\\
+      	\end{matrix}
+      \right]
+      + \Sigma_{k=1} ^ {i} \vec{t_i}
+    \end{equation}
+    
+至此，我们通过二维曲线上各微段弧长和曲率拟合出了各端点的绝对坐标。
+
+\item \textbf{三维曲线} \\
+
+\begin{figure}[H]
+\centering
+\includegraphics{coordinate-reconst.pdf}
+\caption{基于Cartesian坐标系的三维曲线重建原理}
+\label{fig:coordinate-reconst} 
+\end{figure}
+
+
+如图 ~\ref{fig:coordinate-reconst} 所示，在三维情况下，我们以曲线的每个$ds$微段的端点$o_i$为原点建立运动坐标系\cite{three-dimensional-curve} $o_i-a_ib_ic_i$，其中$c_i$是曲线在$o_i$点的切向量，$a_i$是法向量，$b_i$是副法向量。
+\begin{equation}
+b_i = a_i \times c_i
+\end{equation}
+
+这一点区别于传统的基于Cartesian坐标系的三维曲线重建，我们的运动坐标系不再使用$o_i-x_iy_iz_i$。
+这样每次迭代能省去一次矩阵运算，并且可以分别迭代分离旋转矩阵和平移拉伸矩阵。
+
+假设微段合曲率向量为$k_i$，则同样有：
+\begin{equation}
+\theta_i = ds\cdot |k_i|
+\end{equation}
+要求运动坐标系$o_i-a_ib_ic_i$到运动坐标系$o_{i+1}-a_{i+1}b_{i+1}c_{i+1}$的旋转矩阵$r_{i, i+1}$，需先求$k_i$与$a_i$的夹角$\phi_i$。
+
+已知两个曲率分量$kx$和$ky$，将各运动坐标轴的$o-ab$平面叠加可得到下图的$o-xy$平面，其中$x$和$y$分别是两个曲率方向。由于$a$是曲线法向量，故$a_{i+1}$与$k_i$同向，即$a_{i+1}$与$a_{i+2}$的夹角$\phi_{i+1}$是合曲率向量$k_i$与$k_{i+1}$的夹角。
+
+\begin{figure}[H]
+\centering
+\includegraphics{iterate-phi.pdf}
+\caption{运动坐标系旋转俯视图}
+\label{fig:iterate-phi} 
+\end{figure}
+
+又由于$x$的方向恒定（不发生扭转的情况下），故有：
+
+\begin{align}
+\phi_{i+1} &= \alpha_{i+1} - \alpha_i \\
+\alpha_i &= arccos\frac{|kx_i|}{|k_i|} \\
+k_i &= kx_i + ky_i \\
+|k_i| &= \sqrt{(kx_i)^2 + (ky_i)^2}
+\end{align}
+
+算得$\phi_i$后可易得：
+
+运动坐标系$o_i-a_ib_ic_i$到临时坐标系$o_i'-a_i'b_i'c_i'$的旋转矩阵$r_i'$满足：
+    \begin{equation}
+    r_i' = \left[
+            \begin{matrix}
+            cos\phi_i & -sin\phi_i & 0\\
+            sin\phi_i & cos\phi_i & 0\\
+            0 & 0 & 1\\
+            \end{matrix}
+        \right]
+    \end{equation}
+    
+点$o_{i+1}$在临时坐标系$o_i'-a_i'b_i'c_i'$下的相对坐标$o_{i+1}'$满足：
+    \begin{equation}
+    o_{i+1}' = \frac{1}{|k_i|} \cdot \left[
+      \begin{matrix}
+    	1 - cos\theta_i\\
+    	0 \\
+      sin\theta_i\\
+      \end{matrix}
+    \right]
+    \end{equation}
+    
+临时坐标系$o_i'-a_i'b_i'c_i'$到运动坐标系$o_{i+1}-a_{i+1}b_{i+1}c_{i+1}$的旋转矩阵$r_{i, i+1}$满足：
+    \begin{equation}
+    r_{i, i+1} = \left[
+      \begin{matrix}
+      cos \theta_i & 0 & -sin \theta_i\\
+      0 &1 & 0\\
+      sin \theta_i & 0 & cos \theta_i\\
+      \end{matrix}
+    \right]
+    \end{equation}
+
+故可得：
+
+绝对坐标系$o_0-a_0b_0c_0$到临时坐标系$o_i'-a_i'b_i'c_i'$的旋转矩阵$R_i'$满足：
+    \begin{equation}
+    R_i' = r_i' \cdot \prod_{k = 0}^{i-1} r_k' \cdot r_{k, k+1}
+    \end{equation}
+    
+$o_i$ 到$o_{i+1}$在绝对坐标系中的位移向量$t_{i+1}$满足：
+    \begin{equation}
+    \vec{t_i} = Ri'^{-1}\cdot o_{i+1}'
+    \end{equation}
+
+绝对坐标原点$o_0$ 到$o_i$的位移向量$\vec{T_i}$满足：
+    \begin{equation}
+    \vec{T_i} = \Sigma_{k=1} ^ {i} \vec{t_i}
+    \end{equation}
+
+即$o_i$在绝对坐标系中的坐标 $T_i$满足\cite{用于光纤光栅曲线重建算法的坐标点拟合}：
+\begin{equation}
+T_i = \left[
+    \begin{matrix}
+    0\\
+    0\\
+    0\\
+  	\end{matrix}
+  \right]
+  + \Sigma_{k=1} ^ {i} \vec{t_i}
+\end{equation}
+
+\end{itemize}
