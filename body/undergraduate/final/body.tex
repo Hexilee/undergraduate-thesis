@@ -1,31 +1,143 @@
 \cleardoublepage
 
-\section{曲线重建}
+\section{服务器端程序实现}
 
-曲线重建主要分为两个部分，一个是连续化，即将离散的数据连续化；
-另一部分是重建，根据连续的数据得到绝对坐标系下的曲线各点坐标。
-根据传感器的种类不同，所测得的数据类型不同，这两步工作的执行顺序也可以不同。
+整个服务器端程序都采用Rust编程语言\cite{rust}构建。
+Rust是一门C或C++编程语言的替代语言，它速度惊人且内存利用率极高。
+由于没有运行时和垃圾回收，它能够胜任对性能要求特别高的服务，可以在嵌入式设备上运行，还能轻松和其他语言集成。
+它丰富的类型系统和所有权模型保证了内存安全和线程安全，让您在编译期就能够消除各种各样的错误。
+另外，它拥有出色的文档、友好的编译器和清晰的错误提示信息，还集成了一流的工具——包管理器和构建工具，
+智能地自动补全和类型检验的多编辑器支持，以及自动格式化代码等等。 
 
-如MEMS惯性传感器主要测量加速度数据，并对加速度数据进行二次积分而得到测量点位移，
-故可以在计算测量点坐标之后再进行连续化；而像FBG传感器所得到的是测量点的曲率数据，
-难以直接计算获得该点坐标，必须先对曲率数据进行连续化，然后再计算得出各点的坐标。
+\subsection{数据上推流注册模块}
+这个模块需要接收客户端上推的原始数据。所使用的协议为WebSocket on HTTPS。
+本文选用的Web Server是hyper\cite{hyper}，并基于它实现了一个简单的Web框架roa\cite{roa}。
 
-本文主采用更高精度、基于曲率数据的曲线重建方案。故可选用FBG传感器并假定可测得数据为两个正交方向的曲率。
+hyper是一个专注正确性和高性能的http库，但过于底层，使用不便。
+roa是一个类koajs\cite{koajs}的web框架，灵活而易于拓展。
+数据上推流注册模块基于roa框架的HTTPS和WebSocket支持，给每个注册的数据源分配唯一的ID。
 
-\subsection{连续化}
+数据源注册请求就是一个WebSocket请求：
+
+\begin{lstlisting}[caption={发起数据源注册请求}]
+websocket wss://host:port/upstream/
+\end{lstlisting}
+
+连接建立之后服务器端给客户端发一个确认包，以告知注册的频道$id$。
+
+\begin{lstlisting}[language=json,firstnumber=1,caption={数据源注册成功}]
+{
+    "id": 1
+}
+\end{lstlisting}
+
+我们采用JSON\cite{rfc7159}作为主要的数据传输序列化格式，这段数据告诉客户端注册频道$id$为$1$，数据上推准备已完成。
+
+其逻辑伪代码如下：
+
+\begin{lstlisting}[caption={注册数据源}]
+for connection in incomming() {
+    id := sources.push(connection)
+    connection.send({"id": id})
+}
+\end{lstlisting}
+
+其中$incomming$函数接受新的请求链接，$sources$数据源频道列表。
+原始数据即传感器直接或间接测得的曲率数据，其内容如代码块 ~\ref{lst:raw-data}中所示。
+
+\subsection{曲线重建模块}
 图形学上常用的连续化算法（曲线）有贝塞尔（Bezier）曲线、B样条曲线、Catmull Rom样条曲线等；
 而统计学上常用线性插值、多项式插值等。图形学连续化的常见目的是得到光滑曲线，而统计学则追求最小偏差。
 由于“曲率光滑程度对曲线重建结果的影响”尚无理论研究，也超出了本文的研究范围，故本文采用其中最简便的线性插值法。
 
-\subsection{重建}
-常用的重建算法有基于Cartesian坐标系的拟合算法和基于Frenet坐标系的拟合算法。
-其中Cartesian坐标系下的拟合算法拥有更高精度，而Frenet坐标系下的拟合算法更易于编程计算。
-本文提出了一种结合Cartesian坐标系和Frenet标架上两种重建算法的改良算法，
-兼具重建精度高和运行速度快的优点，并在附件一中给出了其在Rust编程语言上的实现。
+线性插值的实现比较简单，伪代码如下：
+
+\begin{lstlisting}[caption={线性插值法}]
+raw := raws.first()
+for next_raw in raws {
+    s := next_raw.s - raw.s
+    kka := (next_raw.ka - raw.ka) / s
+    kkb := (next_raw.kb - raw.kb) / s
+    for i in range(0, s / ds) {
+        curvatures.push({"ka": raw.ka + kka * i, "kb": raw.kb + kkb * i})
+    }
+    raw = next_raw
+}
+\end{lstlisting}
+
+其中$raws$为一组原始数据，其每个成员数据都包含一个测量点的弧长曲率数据；
+$ds$为采用的插值步长；
+$curvatures$为插值后的曲率数据。
+得到连续化后的曲率数据 $curvatures$ 如代码块 ~\ref{lst:curvature-vec}中所示。
+
+曲线重建算法需要的运算（如加减乘除、三角函数、平方开方和矩阵运算）Rust语言库均有提供。核心逻辑伪代码如下：
+
+\begin{lstlisting}[caption={曲线重建}]
+for ka, kb in curvatures {
+    k := (ka.powi(2) + kb.powi(2)).sqrt() // composite curvature
+    theta := k * ds
+    cos_alpha := ka / k
+    sin_alpha := kb / k
+    cos_theta := theta.cos()
+    sin_theta := theta.sin()
+    da := cos_alpha * (1. - cos_theta) / k
+    db := sin_alpha * (1. - cos_theta) / k
+    dc := sin_theta / k
+
+    // get generalized inverse of ti; then dot product relative coordinate
+    ti = ri.pseudo_inverse(0.000000001)? * Vector3::new(da, db, dc)
+    // ai + ti, to get absolute coordinate of current point
+    ai += ti
+
+    column := ai.column(0)
+    // push absolute coordinate of current point
+    points.push(Point {
+        x: column[0],
+        y: column[1],
+        z: column[2],
+    })
+
+    // get next rotation matrix
+    ri = Matrix3::new(
+        cos_alpha, -sin_alpha, 0.,
+        sin_alpha, cos_alpha, 0.,
+        0., 0., 1.,
+    ) * Matrix3::new(
+        cos_theta, 0., sin_theta,
+        0., 1., 0.,
+        -sin_theta, 0., cos_theta,
+    ) * Matrix3::new(
+        cos_alpha, sin_alpha, 0.,
+        -sin_alpha, cos_alpha, 0.,
+        0., 0., 1.,
+    ) * ri
+}
+\end{lstlisting}
+
+重建出的坐标点数据如代码块~\ref{lst:positions}所示。
+
+\subsection{数据下推流模块}
+
+重建数据订阅请求同样是一个WebSocket请求：
+
+\begin{lstlisting}[caption={重建数据订阅}]
+websocket wss://host:port/downstream/:id
+\end{lstlisting}
+
+其中的$:id$为频道$id$，在上推数据源注册时获得。
+重建数据下推流中的一份数据样例如代码块 ~\ref{lst:positions}所示。
+其逻辑伪代码如下：
+
+\begin{lstlisting}[caption={订阅数据源}]
+for id, connection in incomming() {
+    source := sources.get(id)
+    connection.subscribe(source)
+}
+\end{lstlisting}
 
 \subsection{重建效果与误差分析}
 
-本结主要内容是重建算法的效果展示与误差分析。
+本节主要内容是重建算法的效果展示与误差分析。
 为了方便画图和分析，所用曲线为二维标准余弦曲线。
 
 \subsubsection{结果与误差}
@@ -114,96 +226,8 @@
 \label{fig:cos-multiple-error}
 \end{figure}
 
-\section{数据传输}
 
-数据传输也主要分为两个部分：一是传感客户端到服务端的原始数据上推流；二是服务器到渲染客户端的重建数据下推流。
-
-所用技术栈有两个选择，一是基于HTTPS的WebSocket，二是基于HTTP2的gRPC。
-它们同样是纯流式、高性能且安全。从性能上来说，gRPC略高于WebSocket；
-从技术发展上来说，gRPC比WebSocket领先一代。
-可惜gRPC-web过于新潮而不被很多后端语言所支持，故本文选择WebSocket on HTTPS。
-
-\subsection{原始数据上推流}
-
-原始数据上推客户端一般运行在一台直接接收传感器数据的机器上，至少需要支持网络栈上的TCP协议。
-推荐使用一台运行Linux系统的树莓派。
-
-首先，客户端对服务器端发起一个WebSocket请求：
-
-\begin{lstlisting}
-websocket wss://host:port/upstream/
-\end{lstlisting}
-
-连接建立之后服务器端给客户端发一个确认包，以告知注册的频道$id$。
-
-\begin{lstlisting}[language=json,firstnumber=1]
-{
-    "id": 1
-}
-\end{lstlisting}
-
-我们采用JSON\cite{rfc7159}作为主要的数据传输序列化格式，这段数据告诉客户端注册频道$id$为$1$，数据上推准备已完成。
-
-原始数据上推流中的一份数据样例如下：
-
-\begin{lstlisting}[language=json,firstnumber=1]
-{
-    "ds": 0.01,
-    "samples": [
-        [0, 0, 0],
-        [4.66, 0.21, 0],
-        [9.36, 0.27, 0],
-        [14.82, 0.086, 0],
-        [19.72, -0.0093, 0],
-        [24.74, -0.091, 0],
-        [29.95, -0.079, 0]
-    ]
-}
-\end{lstlisting}
-
-其中 $d_s$ 为客户端建议的插值步长，
-$samples$ 数组内的每个元素都是一个三元组，其中三个数据分别代表与原点的距离$s$、$a$方向的曲率$k_a$和$b$方向的曲率$k_b$。
-
-\subsection{重建数据下推流}
-
-重建数据下推客户端一般是PC上的浏览器，采用频道订阅模式。
-
-下推客户端同样需要先发起一个WebSocket请求：
-
-\begin{lstlisting}
-websocket wss://host:port/downstream/:id
-\end{lstlisting}
-
-URI中的$:id$为频道$id$，在上推客户端注册时获得。
-
-重建数据下推流中的一份数据样例如下：
-
-\begin{lstlisting}[language=json,firstnumber=1]
-{
-    "timestamp": 1595915002,
-    "points": [
-        [0.009999833069741726,1.0000499486923218,0],
-        [0.019999666139483452,0.9999996423721313,0],
-        [0.029998499900102615,0.9998496174812317,0],
-        [0.03999536111950874,0.9996007680892944,0],
-        [0.04998929798603058,0.9992536902427673,0],
-        [0.059979379177093506,0.998809278011322,0],
-        [0.0699646919965744,0.998268187046051,0],
-        [0.07994434982538223,0.9976312518119812,0],
-        [0.08991748839616776,0.9968992471694946,0],
-        [0.09988325089216232,0.9960729479789734,0],
-        [0.10984081774950027,0.9951531291007996,0],
-        [0.11978939175605774,0.994140625,0],
-        [0.009999833069741726,1.0000499486923218,0],
-        ...
-    ]
-}
-\end{lstlisting}
-
-其中$timestamp$是数据产生时的时间戳，$points$数组内的每个元素都是一个三元组，
-三个数分别是$x$轴、$y$轴和$z$轴的坐标。
-
-\section{三维渲染}
+\section{客户端程序实现}
 
 三维渲染采用WebGL渲染引擎和Threejs库，主要功能是根据服务器下推的点列实时渲染管壁或轴线。
 
