@@ -209,11 +209,11 @@ for id, connection in incomming() {
 \end{figure}
 
 可知单点曲率误差越大重建误差也越大，
-且每增加$0.1$倍的曲率误差对重建结果的影响都是巨大的，故原始曲率数据的准确性十分重要。
+且每增加$0.1$单位的曲率误差对重建结果的影响都是巨大的，故原始曲率数据的准确性十分重要。
 
 \item \textbf{多点误差传递} \\
 
-图 ~\ref{fig:cos-multiple-error-view} 为曲线上多点分别加入$1.2$曲率数据误差的重建结果。
+图 ~\ref{fig:cos-multiple-error-view} 为曲线上多点分别加入$1.2$单位曲率数据误差的重建结果。
 图 ~\ref{fig:cos-multiple-error} 展示了横坐标$x$变化下分别加入多点曲率误差的的重建误差传递。
 其中$s=0,0.852,2.968,3.820,4.672$分别对应$x=0,\frac{1}{4}\pi,\frac{3}{4}\pi,\pi,\frac{5}{4}\pi$。
 
@@ -424,16 +424,6 @@ scene.add(spotLight)
 
 \begin{enumerate}
 
-\item \textbf{轴线渲染} \\
-渲染模式$mode$切换到选项$line$：
-
-\begin{figure}[H]
-\centering
-\includegraphics[scale=0.3]{line.png}
-\caption{轴线渲染}
-\label{fig:line}
-\end{figure}
-
 \item \textbf{改变管壁颜色} \\
 改变管壁颜色为$\#00FFFF$：
 
@@ -472,6 +462,16 @@ scene.add(spotLight)
 \includegraphics[scale=0.3]{tube-with-axes-grid.png}
 \caption{启用坐标轴和栅格}
 \label{fig:tube-with-axes-grid}
+\end{figure}
+
+\item \textbf{轴线渲染} \\
+渲染模式$mode$切换到选项$line$：
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{line.png}
+\caption{轴线渲染}
+\label{fig:line}
 \end{figure}
 
 \end{enumerate}
