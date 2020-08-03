@@ -142,9 +142,6 @@ for id, connection in incomming() {
 图 ~\ref{fig:cos} 为标准余弦曲线与插值步长为$0.01$时的重建结果对比图。
 图 ~\ref{fig:cos-error} 展示了根据横坐标$x$变化的重建误差，误差定义为两曲线$y$轴坐标之差的绝对值。
 
-由图可知标准余弦曲线一个周期内的重建误差都在$0.05$以内。
-
-
 \begin{figure}[H]
 \centering
 \includegraphics{cos.pdf}
@@ -159,13 +156,16 @@ for id, connection in incomming() {
 \label{fig:cos-error}
 \end{figure}
 
+由图可知标准余弦曲线一个周期内的重建误差都在$0.05$以内，重建曲线与标准具有高度一致的趋势。
+
 \subsubsection{不同步长下的误差}
+
+三维曲线重建的过程本质上是一个三元积分，主要误差来自微段内的曲率变化。
+当步长$d_s$满足$lim_{d_s \rightarrow \infty}$时误差最小，且误差与步长正相关。
+
 
 图 ~\ref{fig:cos-diff-step} 为标准余弦曲线与不同插值步长的重建结果对比图。
 图 ~\ref{fig:cos-diff-step-error} 展示了横坐标$x$变化下不同插值步长的重建误差。
-
-可知步长越小重建误差越小，但步长从$0.01$减少到$0.001$带来的准确性提升并不是很明显，却增加了十倍的计算负担，
-故可认为$0.01$为最适插值步长。
 
 \begin{figure}[H]
 \centering
@@ -181,13 +181,18 @@ for id, connection in incomming() {
 \label{fig:cos-diff-step-error}
 \end{figure}
 
+可见重建误差趋势符合预期，误差与步长正相关。
+但步长从$0.01$减少到$0.001$带来的准确性提升并不是很明显，却增加了十倍的计算负担，
+故可认为$0.01$为最适插值步长。
+
 \subsubsection{误差传递}
+
+\begin{enumerate}
+
+\item \textbf{单点误差传递} \\
 
 图 ~\ref{fig:cos-single-error-view} 为$x = \frac{\pi}{4}$处加入不同曲率数据误差的重建结果，曲率误差的定义为原始曲率的倍数。
 图 ~\ref{fig:cos-single-error} 展示了横坐标$x$变化下加入单点曲率误差的的重建误差传递。
-
-可知单点曲率误差越大重建误差也越大，
-且每增加$0.1$倍的曲率误差对重建结果的影响都是巨大的，故原始曲率数据的准确性十分重要。
 
 \begin{figure}[H]
 \centering
@@ -203,11 +208,14 @@ for id, connection in incomming() {
 \label{fig:cos-single-error}
 \end{figure}
 
+可知单点曲率误差越大重建误差也越大，
+且每增加$0.1$倍的曲率误差对重建结果的影响都是巨大的，故原始曲率数据的准确性十分重要。
+
+\item \textbf{多点误差传递} \\
+
 图 ~\ref{fig:cos-multiple-error-view} 为曲线上多点分别加入$1.2$曲率数据误差的重建结果。
 图 ~\ref{fig:cos-multiple-error} 展示了横坐标$x$变化下分别加入多点曲率误差的的重建误差传递。
-
-可知$s=4.672$处引入曲率误差对重建结果的影响最小，而$s=0.000$处引入对整体曲线影响最大，
-但$s=3.820$处引入对后半段曲线的重建结果影响最大，总体来说没什么规律可循。
+其中$s=0,0.852,2.968,3.820,4.672$分别对应$x=0,\frac{1}{4}\pi,\frac{3}{4}\pi,\pi,\frac{5}{4}\pi$。
 
 \begin{figure}[H]
 \centering
@@ -222,6 +230,11 @@ for id, connection in incomming() {
 \caption{多点误差的传递}
 \label{fig:cos-multiple-error}
 \end{figure}
+
+可知$s=4.672$处引入曲率误差对重建结果的影响最小，而$s=0.000$处引入对整体曲线影响最大，
+但$s=3.820$处引入对后半段曲线的重建结果影响最大，曲率误差引入点对总体曲线误差的影响趋势尚不明朗。
+
+\end{enumerate}
 
 \cleardoublepage
 
