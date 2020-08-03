@@ -15,7 +15,7 @@ Rust是一门C或C++编程语言的替代语言，它速度惊人且内存利用
 
 hyper是一个专注正确性和高性能的http库，但过于底层，使用不便。
 roa是一个类koajs\cite{koajs}的web框架，灵活而易于拓展。
-数据上推流注册模块基于roa框架的HTTPS和WebSocket支持，给每个注册的数据源分配唯一的ID。
+数据上推流注册模块基于roa框架的HTTPS和WebSocket支持，给每个注册的数据源分配唯一的id。
 
 数据源注册请求就是一个WebSocket请求：
 
@@ -59,7 +59,10 @@ for next_raw in raws {
     kka := (next_raw.ka - raw.ka) / s
     kkb := (next_raw.kb - raw.kb) / s
     for i in range(0, s / ds) {
-        curvatures.push({"ka": raw.ka + kka * i, "kb": raw.kb + kkb * i})
+        curvatures.push({
+            "ka": raw.ka + kka * i, 
+            "kb": raw.kb + kkb * i,
+        })
     }
     raw = next_raw
 }
@@ -74,28 +77,24 @@ $curvatures$为插值后的曲率数据。
 
 \begin{lstlisting}[caption={曲线重建}]
 for ka, kb in curvatures {
-    k := (ka.powi(2) + kb.powi(2)).sqrt() // composite curvature
+    k := sqrt(ka ^ 2 + kb ^ 2) // composite curvature
     theta := k * ds
     cos_alpha := ka / k
     sin_alpha := kb / k
-    cos_theta := theta.cos()
-    sin_theta := theta.sin()
-    da := cos_alpha * (1. - cos_theta) / k
-    db := sin_alpha * (1. - cos_theta) / k
+    cos_theta := cos(theta)
+    sin_theta := sin(theta)
+    da := cos_alpha * (1 - cos_theta) / k
+    db := sin_alpha * (1 - cos_theta) / k
     dc := sin_theta / k
 
     // get generalized inverse of ti; then dot product relative coordinate
-    ti = ri.pseudo_inverse(0.000000001)? * Vector3::new(da, db, dc)
+    ti = 1 / [da, db, dc]
     // ai + ti, to get absolute coordinate of current point
     ai += ti
 
-    column := ai.column(0)
+    [x, y, z] := ai.column(0)
     // push absolute coordinate of current point
-    points.push(Point {
-        x: column[0],
-        y: column[1],
-        z: column[2],
-    })
+    points.push(Point {x, y, z})
 
     // get next rotation matrix
     ri = Matrix3::new(
