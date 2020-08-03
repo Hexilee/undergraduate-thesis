@@ -52,7 +52,8 @@ for connection in incomming() {
 而统计学上常用线性插值、多项式插值等。图形学连续化的常见目的是得到光滑曲线，而统计学则追求最小偏差。
 由于“曲率光滑程度对曲线重建结果的影响”尚无理论研究，也超出了本文的研究范围，故本文采用其中最简便的线性插值法。
 
-线性插值的实现比较简单，伪代码如下：
+线性插值的实现比较简单，先算出两个方向曲率$k_a$，$k_b$变化的斜率$k_{k_a}$，$k_{k_b}$，
+再根据斜率和插值步长$d_s$进行插值。其伪代码如下：
 
 \begin{lstlisting}[caption={线性插值法}]
 raw := raws.first()
@@ -353,14 +354,15 @@ scene.add(spotLight)
 \clearpage
 
 \section{软件运行展示}
+第一章中介绍了一种改良的重建算法和曲线重建可视化的实现步骤，
+第二章和第三章分别介绍了服务器端和客户端程序的实现细节。
+本章将介绍客户端与服务器端对接后，软件整体的使用说明和渲染效果。
+展示所用曲线为$[0, 2\pi]$区间内的动态三维余弦曲线，
+实时动态展示网址：\href{https://curve.hexilee.me:8000/}{https://curve.hexilee.me:8000/}。
 
+\subsection{使用说明}
 
-\begin{enumerate}
-
-\item \textbf{实时动态展示：\href{https://curve.hexilee.me:8000/}{https://curve.hexilee.me:8000/}}
-
-\item \textbf{管壁渲染: 图 ~\ref{fig:tube-default}}
-
+图 ~\ref{fig:tube-default} 是软件的默认渲染结果。
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.3]{tube-default.png}
@@ -368,25 +370,49 @@ scene.add(spotLight)
 \label{fig:tube-default}
 \end{figure}
 
-\item \textbf{管壁渲染，启用坐标轴: 图 ~\ref{fig:tube-with-axes}}
+界面左上角是帧率监控，如图 ~\ref{fig:fps} 表示帧率区间$18-60$，当前帧率$60$。
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.3]{tube-with-axes.png}
-\caption{管壁渲染，启用坐标轴}
-\label{fig:tube-with-axes}
+\includegraphics[scale=0.3]{fps.png}
+\caption{帧率监控}
+\label{fig:fps}
 \end{figure}
 
-\item \textbf{管壁渲染，启用坐标轴和栅格: 图 ~\ref{fig:tube-with-axes-grid}}。
+界面顶端为交互说明：
+
+\begin{itemize}
+\item 鼠标拖拽：旋转视角
+\item 滚轮滚动：旋转视角
+\item 上下左右键：平移视角
+\end{itemize}
+
+界面右上角为控制面板，用于控制渲染选项。
+如图 ~\ref{fig:control-pad} 为默认选项，各选项的可选值和含义分别为：
+
+\begin{enumerate}
+\item \textbf{mode: }渲染模式，可选择管壁渲染或者轴线渲染；
+\item \textbf{color: }轴线或管壁的颜色，手动填入十六进制RGB值；
+\item \textbf{backgroundColor: }背景颜色，手动填入十六进制RGB值；
+\item \textbf{axes: }勾选显示坐标轴；
+\item \textbf{grid: }勾选显示辅助栅格；
+\end{enumerate}
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.3]{tube-with-axes-grid.png}
-\caption{管壁渲染，启用坐标轴和栅格}
-\label{fig:tube-with-axes-grid}
+\includegraphics[scale=0.3]{control-pad.png}
+\caption{控制面板}
+\label{fig:control-pad}
 \end{figure}
 
-\item \textbf{轴线渲染: 图 ~\ref{fig:line}}。
+\subsection{渲染效果}
+上一节中我们展示了默认的渲染效果并介绍了软件界面和使用说明，
+本节将会展示在各种选项下的渲染效果。
+
+\begin{enumerate}
+
+\item \textbf{轴线渲染} \\
+渲染模式$mode$切换到选项$line$：
 
 \begin{figure}[H]
 \centering
@@ -395,14 +421,56 @@ scene.add(spotLight)
 \label{fig:line}
 \end{figure}
 
+\item \textbf{改变管壁颜色} \\
+改变管壁颜色为$\#00FFFF$：
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{change-color.png}
+\caption{改变管壁颜色}
+\label{fig:change-color}
+\end{figure}
+
+\item \textbf{改变背景颜色} \\
+改变背景颜色为$\#222222$：
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{change-bg-color.png}
+\caption{改变背景颜色}
+\label{fig:change-bg-color}
+\end{figure}
+
+\item \textbf{启用坐标轴} \\
+勾选选项$axes$：
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{tube-with-axes.png}
+\caption{启用坐标轴}
+\label{fig:tube-with-axes}
+\end{figure}
+
+\item \textbf{启用坐标轴和栅格} \\
+勾选选项$axes$和$grid$：
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{tube-with-axes-grid.png}
+\caption{启用坐标轴和栅格}
+\label{fig:tube-with-axes-grid}
+\end{figure}
+
 \end{enumerate}
+
+\clearpage
 
 \section{总结与展望}
 本文总体来说达到了预期目标，使用的也全是当代最先进的技术。
 其中WebSocket正支持着成千上万的应用；
 TLS保障着整个互联网的安全；
 Rust正在为Firefox添砖加瓦；
-WebGL定义了下一代的三维渲染程序；
+WebGL定义了下一代的三维渲染应用；
 TypeScript是JavaScript社区最受欢迎的转译语言。
 
 从架构方面来说，
