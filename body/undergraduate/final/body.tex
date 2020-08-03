@@ -1,8 +1,10 @@
 \cleardoublepage
 
 \section{服务器端程序实现}
+上章主要介绍了文章的研究背景以及国内外对形变传感器、曲线重建算法、三维渲染技术和网络传输技术的研究现状，
+并提出了一种改良的曲线重建算法和大致的实现步骤。这些理论和方案的具体实践将会在本章和下一章中介绍。
 
-整个服务器端程序都采用Rust编程语言\cite{rust}构建。
+本章主要介绍服务器端程序的实现。整个服务器端程序都采用Rust编程语言\cite{rust}构建，
 Rust是一门C或C++编程语言的替代语言，它速度惊人且内存利用率极高。
 由于没有运行时和垃圾回收，它能够胜任对性能要求特别高的服务，可以在嵌入式设备上运行，还能轻松和其他语言集成。
 它丰富的类型系统和所有权模型保证了内存安全和线程安全，让您在编译期就能够消除各种各样的错误。
@@ -19,13 +21,13 @@ roa是一个类koajs\cite{koajs}的web框架，灵活而易于拓展。
 
 数据源注册请求就是一个WebSocket请求：
 
-\begin{lstlisting}[caption={发起数据源注册请求}]
+\begin{lstlisting}[label={lst:register-source},caption={发起数据源注册请求}]
 websocket wss://host:port/upstream/
 \end{lstlisting}
 
 连接建立之后服务器端给客户端发一个确认包，以告知注册的频道$id$。
 
-\begin{lstlisting}[language=json,firstnumber=1,caption={数据源注册成功}]
+\begin{lstlisting}[language=json,firstnumber=1,label={lst:register-resp},caption={数据源注册成功}]
 {
     "id": 1
 }
@@ -42,7 +44,7 @@ for connection in incomming() {
 }
 \end{lstlisting}
 
-其中$incomming$函数接受新的请求链接，$sources$数据源频道列表。
+其中$incomming$函数接受新的请求连接，$sources$数据源频道列表。
 原始数据即传感器直接或间接测得的曲率数据，其内容如代码块 ~\ref{lst:raw-data}中所示。
 
 \subsection{曲线重建模块}
@@ -77,7 +79,7 @@ $curvatures$为插值后的曲率数据。
 
 \begin{lstlisting}[caption={曲线重建}]
 for ka, kb in curvatures {
-    k := sqrt(ka ^ 2 + kb ^ 2) // composite curvature
+    k := sqrt(ka ^ 2 + kb ^ 2)
     theta := k * ds
     cos_alpha := ka / k
     sin_alpha := kb / k
@@ -86,16 +88,10 @@ for ka, kb in curvatures {
     da := cos_alpha * (1 - cos_theta) / k
     db := sin_alpha * (1 - cos_theta) / k
     dc := sin_theta / k
-
-    // get generalized inverse of ti; then dot product relative coordinate
-    ti = 1 / [da, db, dc]
-    // ai + ti, to get absolute coordinate of current point
+    ti = 1 / ri * [da, db, dc]
     ai += ti
-
     [x, y, z] := ai.column(0)
-    // push absolute coordinate of current point
     points.push(Point {x, y, z})
-
     // get next rotation matrix
     ri = Matrix3::new(
         cos_alpha, -sin_alpha, 0.,
@@ -113,13 +109,14 @@ for ka, kb in curvatures {
 }
 \end{lstlisting}
 
+其中$ri$为旋转矩阵，初始值等于单位矩阵；ti为每个微元内的平移矩阵；ai为总平移矩阵。
 重建出的坐标点数据如代码块~\ref{lst:positions}所示。
 
-\subsection{数据下推流模块}
+\subsection{数据下推流订阅模块}
 
 重建数据订阅请求同样是一个WebSocket请求：
 
-\begin{lstlisting}[caption={重建数据订阅}]
+\begin{lstlisting}[label={lst:subscribe},caption={重建数据订阅}]
 websocket wss://host:port/downstream/:id
 \end{lstlisting}
 
@@ -225,13 +222,41 @@ for id, connection in incomming() {
 \label{fig:cos-multiple-error}
 \end{figure}
 
+\cleardoublepage
 
 \section{客户端程序实现}
+上章主要介绍了服务器端程序的实现，包括数据上推流注册、曲线重建和数据下推流订阅三个模块。
+其中数据上推流注册和数据下推流订阅两个功能均需要相应客户端的支持。
+本章主要介绍两个客户端程序的实现，它们分别是原始数据推流客户端和渲染客户端。
 
-三维渲染采用WebGL渲染引擎和Threejs库，主要功能是根据服务器下推的点列实时渲染管壁或轴线。
+\subsection{原始数据推流客户端}
+原始数据推流客户端需要直接获得原始曲率数据，对性能的要求不高，但需要支持TCP网络栈。
+权衡价格、能耗、易用性等因素，本文使用运行Linux系统的树莓派机器。
+Linux平台同样支持Rust编程语言，可以使用hyper客户端的WebSocket扩展库。
 
+原始数据推流客户端程序核心逻辑如下：
+
+\begin{enumerate}
+\item \textbf{注册数据源：}如代码块~\ref{lst:register-source}和~\ref{lst:register-resp}所示；
+\item \textbf{上推数据：} \\
+伪代码如下：
+
+\begin{lstlisting}[caption={上推数据}]
+for raw_data in sense() {
+    connection.send(raw_data)
+}
+\end{lstlisting}
+
+其中$sense$函数会持续地返回原始数据，之后再通过WebSocket连接将数据发往服务器端。
+
+\end{enumerate}
+
+\subsection{渲染客户端}
+
+渲染客户端的主要功能是根据服务器下推的点列实时渲染管壁或轴线。
+三维渲染采用WebGL渲染引擎和Threejs库，
 WebGL是浏览器上的OpenGL实现，用于在任何兼容的Web浏览器中呈现交互式3D和2D图形\cite{webgl}。
-WebGL通过引入一个与OpenGL ES 2.0紧密相符合的API，可以在HTML5 <canvas>元素中使用。
+WebGL通过引入一个与OpenGL ES 2.0紧密相符合的API，可以在HTML5<canvas>元素中使用。
 
 目前支持WebGL的浏览器有：Firefox 4+、Google Chrome 9+、Opera 12+、Safari 5.1+和Internet Explorer 11+；
 但是WebGL一些特性也需要用户的硬件设备支持。
@@ -240,159 +265,137 @@ WebGL几乎是完全地“跨平台”，使用任何支持WebGL的浏览器打�
 
 Three.js是一个基于WebGL的3D图形库\cite{threejs}，它封装了很多实用的图形组件。
 
-\subsection{轴线渲染}
+\subsubsection{数据订阅模块}
+渲染流程的第一步是向服务器订阅重建的坐标数据，并根据坐标数据拟合一条Catmull Rom曲线。
+数据订阅请求使用浏览器提供的WebSocket接口\cite{mdn-websocket}，
+曲线拟合使用Threejs提供的$CatmullRomCurve3$。
 
-首先根据下推的点列拟合一条Catmull Rom曲线：
+数据订阅流程如下：
 
-\begin{lstlisting}[language=JavaScript,
-   backgroundcolor=\color{lightgray},
-   extendedchars=true,
-   basicstyle=\footnotesize\ttfamily,
-   showstringspaces=false,
-   showspaces=false,
-   numbers=left,
-   numberstyle=\footnotesize,
-   numbersep=9pt,
-   tabsize=2,
-   breaklines=true,
-   showtabs=false,
-   captionpos=b]
+\begin{enumerate}
+\item \textbf{订阅数据源：}如代码块~\ref{lst:subscribe}所示；
+\item \textbf{接收数据：} \\
+重建坐标数据的格式见代码块 ~\ref{lst:positions}，逻辑伪代码如下：
 
-socket.addEventListener('message', event => {
-    if (event.data instanceof Blob) {
-        event.data.arrayBuffer().then(buffer => {
-            let json = inflateRaw(new Uint8Array(buffer), { to: 'string' })
-            let data = JSON.parse(json) as Curve
-            curve = new THREE.CatmullRomCurve3(data.points.map(
-                ({ x, y, z }) => (new Vector3(x, y, z)),
-            ))
-        }).catch(err => {
-            console.log(err)
-        })
-    }
-})
-\end{lstlisting}
-
-再定义基础线材质，根据曲线和材质渲染形状并填入缓冲形状：
-
-\begin{lstlisting}[language=JavaScript,
-   backgroundcolor=\color{lightgray},
-   extendedchars=true,
-   basicstyle=\footnotesize\ttfamily,
-   showstringspaces=false,
-   showspaces=false,
-   numbers=left,
-   numberstyle=\footnotesize,
-   numbersep=9pt,
-   tabsize=2,
-   breaklines=true,
-   showtabs=false,
-   captionpos=b]
-const material = new THREE.LineBasicMaterial()
-const bufGeometry = new THREE.BufferGeometry()
-export const object = new THREE.Line(bufGeometry, material)
-export const update = () => {
-    material.setValues({color: config.color})
-    if (curve !== null) {
-        bufGeometry.setFromPoints(curve.getPoints(100))
-    }
+\begin{lstlisting}[caption={订阅数据}]
+for points in receive() {
+    curve := new CatmullRomCurve3(points)
 }
 \end{lstlisting}
 
-\subsection{管壁渲染}
+其中$receive$函数会持续地接收坐标数据$points$，之后再基于坐标数据拟合曲线。
 
-管壁渲染基于同样的Catmull Rom曲线，但使用网格材质，双边渲染，反光度$100$：
+\end{enumerate}
 
-\begin{lstlisting}[language=JavaScript,
-   backgroundcolor=\color{lightgray},
-   extendedchars=true,
-   basicstyle=\footnotesize\ttfamily,
-   showstringspaces=false,
-   showspaces=false,
-   numbers=left,
-   numberstyle=\footnotesize,
-   numbersep=9pt,
-   tabsize=2,
-   breaklines=true,
-   showtabs=false,
-   captionpos=b]
-const material = new THREE.MeshPhongMaterial({
+\subsubsection{轴线渲染}
+
+获得曲线之后，先考虑渲染一条轴线。
+三维渲染的一条线是不需要考虑直径等几何属性的，只需要指定基曲线和基础线材料即可完成渲染。
+基础线材料采用Threejs提供的$LineBasicMaterial$，并另外使用其提供的$BufferGeometry$作为动态曲线的缓冲区。
+伪代码如下：
+
+\begin{lstlisting}[caption={渲染轴线}]
+material := new LineBasicMaterial()
+bufGeometry := new THREE.BufferGeometry()
+object := new Line(bufGeometry, material)
+for points in receive() {
+    curve := new CatmullRomCurve3(points)
+    bufGeometry.setCurve(curve)
+}
+\end{lstlisting}
+
+\subsubsection{管壁渲染}
+
+管壁是一个三维物体，它有固定的直径等几何属性和反光度等材料属性，构建过程比轴线更复杂。
+
+本文使用Threejs提供的$MeshPhongMaterial$材质，它是一种光亮的材质，可以模拟具有镜面高光的光泽表面。
+渲染一个使用网格材质，双边渲染，分段数$64$，直径$0.1$，反光度$100$的管壁伪代码如下：
+
+\begin{lstlisting}[caption={渲染管壁}]
+material := new MeshPhongMaterial({
     shininess: 100,
     side: THREE.DoubleSide,
 })
-const bufGeometry = new THREE.BufferGeometry()
-export const object = new THREE.Mesh(bufGeometry, material)
-export const update = () => {
-    material.setValues({color: config.color})
-    if (curve !== null) {
-        let geometry = new THREE.TubeGeometry(
-            curve,
-            64,
-            0.1,
-        )
-        bufGeometry.fromGeometry(geometry)
-        geometry.dispose()
-    }
-}
+geometry = new TubeGeometry(curve, 64, 0.1)
+object := new Mesh(geometry, material)
 \end{lstlisting}
 
-\subsection{控制器}
+\subsubsection{控制器}
+控制器是一种响应外部输入（如鼠标键盘）以控制摄像头或其它物体位置、大小、形状的程序模块。
+本文主要使用的控制器为轨道控制器，摄像头可以响应鼠标动作绕某一点三轴旋转、缩放，
+或是响应键盘上下左右键平移。
 
-主要使用的控制器为轨道控制器，绕原点旋转，启用阻尼：
+轨道控制器使用Threejs提供的$OrbitControls$，其围绕原点旋转伪代码如下：
 
-\begin{lstlisting}[language=JavaScript,
-   backgroundcolor=\color{lightgray},
-   extendedchars=true,
-   basicstyle=\footnotesize\ttfamily,
-   showstringspaces=false,
-   showspaces=false,
-   numbers=left,
-   numberstyle=\footnotesize,
-   numbersep=9pt,
-   tabsize=2,
-   breaklines=true,
-   showtabs=false,
-   captionpos=b]
-const orbitControls = new OrbitControls(camera, renderer.domElement)
-orbitControls.target = new THREE.Vector3(0, 0, 0)
-orbitControls.autoRotate = false
-orbitControls.enableDamping = true
-orbitControls.dampingFactor = 0.05
+\begin{lstlisting}[caption={轨道控制器}]
+orbitControls := new OrbitControls(camera)
+orbitControls.target = [0, 0, 0]
 \end{lstlisting}
 
-\subsection{环境光}
+\subsubsection{环境光}
 
-环境光使用了一个颜色为$\#111111$的全局光和一个颜色为$\#505050$的点光源。
+没有施加环境光照的情况下摄像头是拍不到任何图像的。常用的环境光主要有三类：全局光、平行光和点光源。
+全局光均匀地照射在场景的每一个物体上，不会产生阴影或者反光，非常易于计算但过于朴素；
+平行光会产生阴影和反光效果，并且相对易于计算；点光源计算难度较大，但视觉效果较好。
 
-\begin{lstlisting}[language=JavaScript,
-   backgroundcolor=\color{lightgray},
-   extendedchars=true,
-   basicstyle=\footnotesize\ttfamily,
-   showstringspaces=false,
-   showspaces=false,
-   numbers=left,
-   numberstyle=\footnotesize,
-   numbersep=9pt,
-   tabsize=2,
-   breaklines=true,
-   showtabs=false,
-   captionpos=b]
-scene.add(new THREE.AmbientLight(0x111111))
-let spotLight = new THREE.DirectionalLight(0x505050, 1.5)
+本文使用一个RGB颜色为$\#111111$的全局光和一个颜色为$\#505050$的点光源组成复合光源，
+点光源位于空间中坐标$[0, 1000, 0]$处。
+全局光和点光源分别使用Threejs提供的$AmbientLight$和$DirectionalLight$，
+伪代码如下：
+
+\begin{lstlisting}[caption={环境光}]
+scene.add(new AmbientLight(0x111111))
+spotLight := new DirectionalLight(0x505050)
 spotLight.position.set(0, 1000, 0)
-spotLight.castShadow = true
-spotLight.shadow.camera.near = 3
-spotLight.shadow.camera.far = 10
-spotLight.shadow.mapSize.width = 1024
-spotLight.shadow.mapSize.height = 1024
 scene.add(spotLight)
 \end{lstlisting}
 
-\section{软件运行效果}
-最终的软件运行效果总体来说很令人满意：运行速度快，稳定60帧渲染；全程TLS加密，安全有保障；
-可运行中动态上推、渲染、订阅新的数据源，使用体验极佳。
+\cleardoublepage
 
-具体展示见附件二。
+\section{软件运行展示}
+
+
+\begin{enumerate}
+
+\item \textbf{实时动态展示：\href{https://curve.hexilee.me:8000/}{https://curve.hexilee.me:8000/}}
+
+\item \textbf{管壁渲染: 图 ~\ref{fig:tube-default}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{tube-default.png}
+\caption{管壁渲染}
+\label{fig:tube-default}
+\end{figure}
+
+\item \textbf{管壁渲染，启用坐标轴: 图 ~\ref{fig:tube-with-axes}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{tube-with-axes.png}
+\caption{管壁渲染，启用坐标轴}
+\label{fig:tube-with-axes}
+\end{figure}
+
+\item \textbf{管壁渲染，启用坐标轴和栅格: 图 ~\ref{fig:tube-with-axes-grid}}。
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{tube-with-axes-grid.png}
+\caption{管壁渲染，启用坐标轴和栅格}
+\label{fig:tube-with-axes-grid}
+\end{figure}
+
+\item \textbf{轴线渲染: 图 ~\ref{fig:line}}。
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{line.png}
+\caption{轴线渲染}
+\label{fig:line}
+\end{figure}
+
+\end{enumerate}
 
 \section{总结与展望}
 本文总体来说达到了预期目标，使用的也全是当代最先进的技术。
