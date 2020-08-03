@@ -11,7 +11,7 @@ FOSS可以由三芯光纤布拉格光栅（Fiber Bragg Grating, FBG）传感器�
 然而，并没有学者研究过如何为形变传感器构建一个通用的三维可视化软件。
 
 另一方面，随着软件工程的发展，有无数种编程语言和渲染技术诞生，从中选择合适的技术栈成为了一大难题。
-单是OpenGL就有JavaScript绑定的WebGL；C绑定的WGL、GLX和CGL；iOS提供的C绑定和Android提供的Java和C绑定等。
+仅是OpenGL技术本身就有JavaScript绑定的WebGL；C绑定的WGL、GLX和CGL；iOS提供的C绑定和Android提供的Java和C绑定等。
 
 而随着互联网革命的持续推进，基于浏览器的图像渲染、数据传输技术逐渐成熟并成为大势所趋。
 一款运行在浏览器上的形变传感器可视化软件绝对是时代浪潮下的最佳选择。
@@ -34,7 +34,7 @@ FOSS可以由三芯光纤布拉格光栅（Fiber Bragg Grating, FBG）传感器�
 
 FOSS利用光纤传感器（Fiber Optic Sensors, FOS）来实现相对位置测量，
 或是使用嵌入式FOS实现物体形状的测量。
-FOS的发展趋势如表 ~\ref{table:foss} \cite{recent-dev-in-foss}。
+FOS的发展趋势如表 ~\ref{table:foss}。
 
 \begin{table}[!htbp]\small
 \begin{center}
@@ -99,7 +99,7 @@ FOS的发展趋势如表 ~\ref{table:foss} \cite{recent-dev-in-foss}。
 \bottomrule
 \end{tabular}
 \end{center}
-\caption{FOSS的发展趋势}
+\caption{FOSS的发展趋势\cite{recent-dev-in-foss}}
 \label{table:foss}
 \end{table}
 
@@ -770,7 +770,7 @@ T_i = \left[
 \end{lstlisting}
 
 其中 $d_s$ 为建议插值步长，
-$samples$ 数组内的每个元素都是一个三元组，其中三个数据分别代表与原点的距离$s$、$a$方向的曲率$k_a$和$b$方向的曲率$k_b$。
+$samples$ 数组内的每个元素都是一个三元组，三个数据分别代表与原点的距离$s$、$a$方向的曲率$k_a$和$b$方向的曲率$k_b$。
 
 连续化的输出内容大致为：
 
@@ -794,7 +794,7 @@ $samples$ 数组内的每个元素都是一个三元组，其中三个数据分�
 \end{lstlisting}
 
 其中 $d_s$ 为实际采用的插值步长，
-$ks$ 数组内的每个元素都是一个二元组，其中两个数据分别代表$a$方向的曲率$k_a$和$b$方向的曲率$k_b$。
+$ks$ 数组内的每个元素都是一个二元组，两个数据分别代表$a$方向的曲率$k_a$和$b$方向的曲率$k_b$。
 
 \item \textbf{曲线坐标重建} \\
 曲线坐标重建的输入数据为连续化后的曲率数据。根据曲率数据重建后输出坐标数据：
@@ -829,8 +829,8 @@ $ks$ 数组内的每个元素都是一个二元组，其中两个数据分别代
 首先根据下推的点列拟合一条Catmull Rom曲线，再根据需求渲染轴线或管壁。
 
 渲染轴线可直接选择线性基础材质并进行曲线渲染；
-渲染管壁则需要选择网格轮廓的精度以及材质三角密度和反光度等数据渲染。
-渲染完成则得到一帧数据。
+渲染管壁则需要选择直径等几何属性以及反光度等材质属性才能进行渲染。
+渲染完成则得到一帧图像。
 
 实时地输入曲率数据则可得到实时的轴线或管壁图像。
 
