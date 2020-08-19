@@ -139,8 +139,8 @@ for id, connection in incomming() {
 
 \subsubsection{结果与误差}
 
-图 ~\ref{fig:cos} 为标准余弦曲线与插值步长为$0.01$时的重建结果对比图。
-图 ~\ref{fig:cos-error} 展示了根据横坐标$x$变化的重建误差，误差定义为两曲线$y$轴坐标之差的绝对值。
+图 ~\ref{fig:cos} 为标准余弦曲线与插值步长为$0.01$时的重建结果对比图，横、纵轴分别为空间中的$x$、$y$坐标。
+图 ~\ref{fig:cos-error} 展示了随横坐标$x$变化的重建误差，误差定义为两曲线$y$轴坐标之差的绝对值。
 
 \begin{figure}[H]
 \centering
@@ -164,7 +164,7 @@ for id, connection in incomming() {
 当步长$d_s$满足$lim_{d_s \rightarrow \infty}$时误差最小，且误差与步长正相关。
 
 
-图 ~\ref{fig:cos-diff-step} 为标准余弦曲线与不同插值步长的重建结果对比图。
+图 ~\ref{fig:cos-diff-step} 为标准余弦曲线与不同插值步长的重建结果对比图，横、纵轴分别为空间中的$x$、$y$坐标。
 图 ~\ref{fig:cos-diff-step-error} 展示了横坐标$x$变化下不同插值步长的重建误差。
 
 \begin{figure}[H]
@@ -191,7 +191,8 @@ for id, connection in incomming() {
 
 \item \textbf{单点误差传递} \\
 
-图 ~\ref{fig:cos-single-error-view} 为$x = \frac{\pi}{4}$处加入不同曲率数据误差的重建结果，曲率误差的定义为原始曲率的倍数。
+图 ~\ref{fig:cos-single-error-view} 为$x = \frac{\pi}{4}$处加入不同曲率数据误差的重建结果，横、纵轴分别为空间中的$x$、$y$坐标，
+曲率误差的定义为原始曲率的倍数。
 图 ~\ref{fig:cos-single-error} 展示了横坐标$x$变化下加入单点曲率误差的的重建误差传递。
 
 \begin{figure}[H]
@@ -213,7 +214,7 @@ for id, connection in incomming() {
 
 \item \textbf{多点误差传递} \\
 
-图 ~\ref{fig:cos-multiple-error-view} 为曲线上多点分别加入$1.2$单位曲率数据误差的重建结果。
+图 ~\ref{fig:cos-multiple-error-view} 为曲线上多点分别加入$1.2$单位曲率数据误差的重建结果，横、纵轴分别为空间中的$x$、$y$坐标。
 图 ~\ref{fig:cos-multiple-error} 展示了横坐标$x$变化下分别加入多点曲率误差的的重建误差传递。
 其中$s=0,0.852,2.968,3.820,4.672$分别对应$x=0,\frac{1}{4}\pi,\frac{3}{4}\pi,\pi,\frac{5}{4}\pi$。
 
@@ -496,4 +497,4 @@ TypeScript是JavaScript社区最受欢迎的转译语言。
 但从完成度上来说，该软件只达到了最小可用的要求，它还需要根据实际需求添加更多的功能以及对现有功能进行调整。
 比如添加用户认证系统或者在渲染中更高级的动态分析。
 
-要构建一个成熟的三维可视化软件，还有很长的路要走，很多问题有待解决。
+要构建一个成熟的三维可视化软件，还有较远的距离，有许多问题有待解决。
