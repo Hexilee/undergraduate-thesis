@@ -47,31 +47,34 @@ C绑定的WGL、GLX和CGL；iOS提供的C绑定和Android提供的Java和C绑定
 \midrule
 
 电阻压力传感器 & 用于短距离二维弯曲或关节运动测量。&
+\begin{minipage}[t]{0.24\textwidth}
 \begin{itemize}
-\setlength{\topsep}{0pt}
 \setlength{\itemsep}{0pt}
 \setlength{\parsep}{0pt}
 \setlength{\parskip}{0pt}
-    \item 低成本；
-    \item 与其它电器件相兼容；
-    \item 非常适用于可穿戴电子产品。
+\item 低成本；
+\item 与其它电器件相兼容；
+\item 非常适用于可穿戴电子产品。
 \end{itemize}
+\end{minipage}
 & 
+\begin{minipage}[t]{0.24\textwidth}
 \begin{itemize}
-\setlength{\topsep}{0pt}
 \setlength{\itemsep}{0pt}
 \setlength{\parsep}{0pt}
 \setlength{\parskip}{0pt}
-    \item 不够精准；
-    \item 尺寸重量过大，不适用于小尺寸的自动控制应用；
-    \item 复杂且接线繁琐，不适用于大规模应用。
-\end{itemize} \\
+\item 不够精准；
+\item 尺寸重量过大，不适用于小尺寸的自动控制应用；
+\item 复杂且接线繁琐，不适用于大规模应用。
+\end{itemize}
+\end{minipage}
+\\
 
 \midrule
 
 光电传感器 & 基于密集的传感器网络工作：一种可计算物体3D表面的算法解决方案；一种电阻率传感器网络；三轴陀螺仪、三轴加速 度计和航班时间距离传感器。&
+\begin{minipage}[t]{0.24\textwidth}
 \begin{itemize}
-\setlength{\topsep}{0pt}
 \setlength{\itemsep}{0pt}
 \setlength{\parsep}{0pt}
 \setlength{\parskip}{0pt}
@@ -79,9 +82,10 @@ C绑定的WGL、GLX和CGL；iOS提供的C绑定和Android提供的Java和C绑定
     \item 易于大规模生产；
     \item 与Arduinos等价格低廉的微电子设备兼容。
 \end{itemize}
+\end{minipage}
 & 
+\begin{minipage}[t]{0.24\textwidth}
 \begin{itemize}
-\setlength{\topsep}{0pt}
 \setlength{\itemsep}{0pt}
 \setlength{\parsep}{0pt}
 \setlength{\parskip}{0pt}
@@ -89,13 +93,14 @@ C绑定的WGL、GLX和CGL；iOS提供的C绑定和Android提供的Java和C绑定
     \item 要求传感器周围有自由空间，以便光学传感器能够正常工作；
     \item 无法保证精度；
     \item 不够灵活。
-\end{itemize} \\
+\end{itemize}
+\end{minipage} \\
 
 \midrule
 
 MEMS传感器 & 结合了加速度计、陀螺仪和磁力计的微电机系统。&
+\begin{minipage}[t]{0.24\textwidth}
 \begin{itemize}
-\setlength{\topsep}{0pt}
 \setlength{\itemsep}{0pt}
 \setlength{\parsep}{0pt}
 \setlength{\parskip}{0pt}
@@ -105,7 +110,9 @@ MEMS传感器 & 结合了加速度计、陀螺仪和磁力计的微电机系统�
     \item 适用于密闭空间；
     \item 精加工。
 \end{itemize}
+\end{minipage}
 & 
+\begin{minipage}[t]{0.24\textwidth}
 \begin{itemize}
 \setlength{\itemsep}{0pt}
 \setlength{\parsep}{0pt}
@@ -115,7 +122,8 @@ MEMS传感器 & 结合了加速度计、陀螺仪和磁力计的微电机系统�
     \item 低柔韧性（长关节）；
     \item 测量分辨率低；
     \item 昂贵。
-\end{itemize} \\
+\end{itemize} 
+\end{minipage} \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -126,17 +134,13 @@ MEMS传感器 & 结合了加速度计、陀螺仪和磁力计的微电机系统�
 分析可知这三种CSS传感器各自的适用场景：
 
 \begin{itemize}
-\setlength{\topsep}{0pt}
-\setlength{\itemsep}{0pt}
-\setlength{\parsep}{0pt}
-\setlength{\parskip}{0pt}
     \item 电阻压力传感器适用于消费级电子产品，如游戏用压感器、心率检测仪等。
     \item 光电传感器适用于通用基础设备，如医疗运动用人体肌肉脊椎形状传感。
     \item MEMS传感器适用于大型工程，如钻井、海床监控等。
 \end{itemize}
 
+\FloatBarrier
 \subsubsection{光纤形变传感器}
-
 光纤传感的出现让实时确定物体的形态成为了一个很有前景的研究方向。
 FOSS利用光纤传感器（Fiber Optic Sensors, FOS）来实现相对位置测量，
 或是使用嵌入式FOS实现物体形状的测量。
@@ -156,7 +160,6 @@ FOSS可以由三芯光纤布拉格光栅（Fiber Bragg Grating, FBG）传感器�
 \end{itemize}
 
 FOS的发展趋势如表~\ref{table:foss}所示。
-\FloatBarrier
 \begin{table}\footnotesize
 \begin{center}
 \tabcolsep=0.10cm
@@ -224,6 +227,8 @@ FOS的发展趋势如表~\ref{table:foss}所示。
 \caption{FOSS的发展趋势\cite{recent-dev-in-foss}}
 \label{table:foss}
 \end{table}
+
+可知
 \FloatBarrier
 
 
