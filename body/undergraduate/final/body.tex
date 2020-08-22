@@ -136,12 +136,13 @@ B样条曲线插值法和三次样条曲线插值法。
 
 \begin{enumerate}[label=(\Alph*)]
     \item \textbf{曲率方向作为运动坐标系坐标轴的拟合算法} \\
-
-    \begin{figure}[H]
+    \FloatBarrier
+    \begin{figure}
     \centering
     \includegraphics[scale=0.4]{cartesian-coordinate-system.jpg}
     \caption{曲率方向作为运动坐标系坐标轴\cite{用于光纤光栅曲线重建算法的坐标点拟合}}
     \end{figure}
+    \FloatBarrier
 
     此算法的原理是以每个微段的方向为z轴建立运动坐标系$o_i-a_ib_ic_i$，
     并通过几何方法求得下一个点在此坐标系下的相对坐标\cite{3d-shape-display}$o_{i+1} \{d_{ai}, d_{bi}, d_{ci}\}$，
@@ -577,19 +578,21 @@ for id, connection in incomming() {
 图 ~\ref{fig:cos} 为标准余弦曲线与插值步长为$0.01$时的重建结果对比图，横、纵轴分别为空间中的$x$、$y$坐标。
 图 ~\ref{fig:cos-error} 展示了随横坐标$x$变化的重建误差，误差定义为两曲线$y$轴坐标之差的绝对值。
 
-\begin{figure}[H]
+\FloatBarrier
+\begin{figure}
 \centering
 \includegraphics{cos.pdf}
 \caption{余弦曲线重建结果}
 \label{fig:cos}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}
 \centering
 \includegraphics{cos-error.pdf}
 \caption{余弦曲线重建误差}
 \label{fig:cos-error}
 \end{figure}
+\FloatBarrier
 
 由图可知标准余弦曲线一个周期内的重建误差都在$0.05$以内，重建曲线与标准曲线具有高度一致的趋势。
 
@@ -602,19 +605,21 @@ for id, connection in incomming() {
 图 ~\ref{fig:cos-diff-step} 为标准余弦曲线与不同插值步长的重建结果对比图，横、纵轴分别为空间中的$x$、$y$坐标。
 图 ~\ref{fig:cos-diff-step-error} 展示了横坐标$x$变化下不同插值步长的重建误差。
 
-\begin{figure}[H]
+\FloatBarrier
+\begin{figure}
 \centering
 \includegraphics{cos-diff-step.pdf}
 \caption{不同步长下的重建结果}
 \label{fig:cos-diff-step}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}
 \centering
 \includegraphics{cos-diff-step-error.pdf}
 \caption{不同步长下的重建误差}
 \label{fig:cos-diff-step-error}
 \end{figure}
+\FloatBarrier
 
 可见重建误差趋势符合预期，误差与步长正相关。
 但步长从$0.01$减少到$0.001$带来的准确性提升并不是很明显，却增加了十倍的计算负担，
@@ -630,19 +635,21 @@ for id, connection in incomming() {
 曲率误差的定义为原始曲率的倍数。
 图 ~\ref{fig:cos-single-error} 展示了横坐标$x$变化下加入单点曲率误差的的重建误差传递。
 
-\begin{figure}[H]
+\FloatBarrier
+\begin{figure}
 \centering
 \includegraphics{cos-single-error-view.pdf}
 \caption{加入单点误差的重建结果}
 \label{fig:cos-single-error-view}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}
 \centering
 \includegraphics{cos-single-error.pdf}
 \caption{单点误差的传递}
 \label{fig:cos-single-error}
 \end{figure}
+\FloatBarrier
 
 可知单点曲率误差越大重建误差也越大，
 且每增加$0.1$单位的曲率误差对重建结果的影响都是巨大的，故原始曲率数据的准确性十分重要。
@@ -653,19 +660,21 @@ for id, connection in incomming() {
 图 ~\ref{fig:cos-multiple-error} 展示了横坐标$x$变化下分别加入多点曲率误差的的重建误差传递。
 其中$s=0,0.852,2.968,3.820,4.672$分别对应$x=0,\frac{1}{4}\pi,\frac{3}{4}\pi,\pi,\frac{5}{4}\pi$。
 
-\begin{figure}[H]
+\FloatBarrier
+\begin{figure}
 \centering
 \includegraphics{cos-multiple-error-view.pdf}
 \caption{加入多点误差的重建结果}
 \label{fig:cos-multiple-error-view}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}
 \centering
 \includegraphics{cos-multiple-error.pdf}
 \caption{多点误差的传递}
 \label{fig:cos-multiple-error}
 \end{figure}
+\FloatBarrier
 
 可知$s=4.672$处引入曲率误差对重建结果的影响最小，而$s=0.000$处引入对整体曲线影响最大，
 但$s=3.820$处引入对后半段曲线的重建结果影响最大，曲率误差引入点对总体曲线误差的影响趋势尚不明朗。
@@ -812,7 +821,9 @@ scene.add(spotLight)
 \subsection{使用说明}
 
 图 ~\ref{fig:tube-default} 是软件的默认渲染结果。
-\begin{figure}[H]
+
+\FloatBarrier
+\begin{figure}
 \centering
 \includegraphics[scale=0.3]{tube-default.png}
 \caption{管壁渲染}
@@ -821,12 +832,13 @@ scene.add(spotLight)
 
 界面左上角是帧率监控，如图 ~\ref{fig:fps} 表示帧率区间$18-60$，当前帧率$60$。
 
-\begin{figure}[H]
+\begin{figure}
 \centering
 \includegraphics[scale=0.3]{fps.png}
 \caption{帧率监控}
 \label{fig:fps}
 \end{figure}
+\FloatBarrier
 
 界面顶端为交互说明：
 
@@ -847,12 +859,14 @@ scene.add(spotLight)
 \item \textbf{grid: }勾选显示辅助栅格；
 \end{enumerate}
 
-\begin{figure}[H]
+\FloatBarrier
+\begin{figure}
 \centering
 \includegraphics[scale=0.3]{control-pad.png}
 \caption{控制面板}
 \label{fig:control-pad}
 \end{figure}
+\FloatBarrier
 
 \subsection{渲染效果}
 上一节中我们展示了默认的渲染效果并介绍了软件界面和使用说明，
@@ -862,53 +876,62 @@ scene.add(spotLight)
 
 \item \textbf{改变管壁颜色} \\
 改变管壁颜色为$\#00FFFF$：
-
-\begin{figure}[H]
+\FloatBarrier
+\begin{figure}
 \centering
 \includegraphics[scale=0.3]{change-color.png}
 \caption{改变管壁颜色}
 \label{fig:change-color}
 \end{figure}
+\FloatBarrier
 
 \item \textbf{改变背景颜色} \\
 改变背景颜色为$\#222222$：
 
-\begin{figure}[H]
+\FloatBarrier
+\begin{figure}
 \centering
 \includegraphics[scale=0.3]{change-bg-color.png}
 \caption{改变背景颜色}
 \label{fig:change-bg-color}
 \end{figure}
+\FloatBarrier
 
 \item \textbf{启用坐标轴} \\
 勾选选项$axes$：
 
-\begin{figure}[H]
+\FloatBarrier
+\begin{figure}
 \centering
 \includegraphics[scale=0.3]{tube-with-axes.png}
 \caption{启用坐标轴}
 \label{fig:tube-with-axes}
 \end{figure}
+\FloatBarrier
 
 \item \textbf{启用坐标轴和栅格} \\
 勾选选项$axes$和$grid$：
 
-\begin{figure}[H]
+\FloatBarrier
+\begin{figure}
 \centering
 \includegraphics[scale=0.3]{tube-with-axes-grid.png}
 \caption{启用坐标轴和栅格}
 \label{fig:tube-with-axes-grid}
 \end{figure}
+\FloatBarrier
 
 \item \textbf{轴线渲染} \\
 渲染模式$mode$切换到选项$line$：
 
-\begin{figure}[H]
+\FloatBarrier
+\begin{figure}
 \centering
 \includegraphics[scale=0.3]{line.png}
 \caption{轴线渲染}
 \label{fig:line}
 \end{figure}
+\FloatBarrier
 
 \end{enumerate}
 
