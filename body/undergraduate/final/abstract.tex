@@ -4,17 +4,18 @@
 \end{center}
 
 光纤传感的出现让实时确定物体的形态成为了一个很有前景的研究方向。
-且随着相关行业的发展，医用、工业用光纤形变传感器的落地，形变数据可视化的需求也越来越大。
+且随着相关行业的发展，医用、工业用光纤形变传感器的落地，形变数据可视化的需求也日愈增加。
 然而，未闻有学者研究如何为形变传感器构建一个通用的三维实时可视化软件。
 
-而随着互联网革命的持续推进，基于浏览器的图像渲染、数据传输技术逐渐成熟并成为大势所趋。
-一款运行在浏览器上的形变传感器可视化软件绝对是集新潮、便捷、安全等诸多优点于一身的最佳选择。
+因此，本文介绍了一种基于传感曲率数据的三维曲线实时可视化软件具体实现方案，
+其主要模块包括三维曲线坐标重建、网络数据传输和三维渲染，并在最后展示了软件的实际运行效果。
 
-本文介绍了一种基于Cartesian运动坐标系重建，
-使用WebSocket和HTTPS传输数据，
-使用WebGL渲染的形变传感器三维可视化软件实现。
+本文提出了一种基于Cartesian坐标系和Frenet标架上两种重建算法的改良算法，
+研究了基于HTTPS和WebSocket的数据传输技术，
+利用WebGL渲染引擎和Threejs库实现了对轴线和管壁的渲染，
+使得软件达成了实时、安全、易用的预期目标。
 
-\textbf{关键词}：光纤传感；曲线重建；可视化；浏览器
+\textbf{关键词}：光纤传感；曲线重建；网络传输；三维渲染。
 
 \clearpage{}
 
@@ -22,16 +23,16 @@
     \bfseries \zihao{3} Abstract
 \end{center}
 
-The advent of optical fiber sensing has made real-time determination of the shape of an object a promising research direction. 
-With the development of related industries and the deployment of optical fiber deformation sensors for medical and industrial use, 
-the demand for visualization of deformation data is also increasing. 
-However, no scholars have studied how to build a universal 3D real-time visualization software for the deformation sensor.
+The advent of optical fiber sensing makes real-time determination of the shape of an object a promising research direction.
+With the development of related industries and the deployment of optical fiber deformation sensors for medical and industrial use, the demand for visualization of deformation data is also increasing.
+However, no scholars have studied how to build a universal 3D real-time visualization software for deformation sensors.
 
-On the other hand, with the continuous advancement of the Internet revolution, 
-browser-based image rendering and data transmission technologies have gradually matured and become the general trend. 
-A deformation sensor visualization software running on a browser is definitely the best choice that integrates many advantages such as trendy, convenient, and safe.
+Therefore, this article introduces a specific implementation scheme of real-time visualization software for three-dimensional curves based on sensor curvature data.
+Its main modules include 3D curve coordinate reconstruction, network data transmission and 3D rendering, and at the end it shows the actual running effect of the software.
 
-This article introduces a 3D visualization software implementation of deformation sensor 
-based on Cartesian motion coordinate system reconstruction, using WebSocket and HTTPS data push, and WebGL rendering.
+This paper proposes an improved algorithm based on two reconstruction algorithms on the Cartesian coordinate system and the Frenet frame.
+Researched the data transmission technology based on HTTPS and WebSocket,
+Using WebGL rendering engine and Threejs library to achieve the rendering of the axis and pipe wall,
+The software achieves the expected goals of real-time, security and ease of use.
 
-\textbf{Keywords}: optical fiber sensing; curve reconstruction; visualization; browser
+\textbf{Keywords}: optical fiber sensing; curve reconstruction; network transmission; three-dimensional rendering.
