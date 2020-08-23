@@ -14,9 +14,6 @@ FOSS可以由三芯光纤布拉格光栅（Fiber Bragg Grating, FBG）传感器�
 仅是OpenGL\cite{opengl}技术本身就有JavaScript绑定的WebGL\cite{webgl}；
 C绑定的WGL、GLX和CGL；iOS提供的C绑定和Android提供的Java和C绑定等。
 
-而随着互联网革命的持续推进，基于浏览器的图像渲染、数据传输技术逐渐成熟并成为大势所趋。
-一款运行在浏览器上的形变传感器可视化软件是集实时、安全、易用等诸多优点于一身的最佳选择。
-
 \subsection{形变传感器的研究方向及进展}
 
 形变传感器主要分为两大类，一类是传统形变传感器（Conventional Shape Sensors, CSS），
@@ -159,7 +156,12 @@ FOSS可以由三芯光纤布拉格光栅（Fiber Bragg Grating, FBG）传感器�
 \item 小尺寸的光纤（直径在100μm和2mm之间）可以嵌入非常薄的物体中。
 \end{itemize}
 
-FOS的发展趋势如表~\ref{table:foss}所示。可知
+FOSS的发展趋势如表~\ref{table:foss}所示。
+可知早在1999年，ShapeTape\cite{ShapeTape}已尝试基于光纤传感器感测物体表面的形变并可视化，
+但因技术上的限制没有取得很大的成果；而截至2017年，
+FOSS在测量范围（长光纤）、精度、维度（弯曲、扭曲和力）等方面均取得了一定的进展，
+为新一代FOSS构建通用三维可视化软件的需求也逐渐显现。
+
 \begin{table}\footnotesize
 \begin{center}
 \tabcolsep=0.10cm
@@ -171,8 +173,8 @@ FOS的发展趋势如表~\ref{table:foss}所示。可知
 
 弯曲传感器 & \textasciitilde 1980 & 确定了三种主要的早期弯曲感测方法。它们分别是：
 通过正常光纤传输的功率变化感测；
-通过配备了弯曲调制器的光纤传输功率变化来感测；
-通过同一包层中并行核心之间的串扰而导致的传输功率变化来感测。
+通过配备了弯曲调制器的光纤传输功率变化感测；
+通过同一包层中并行核心之间的串扰而导致的传输功率变化感测。
 \\
 \\
 定向弯曲传感器 & \textasciitilde 1990 & 通过使用多根单独的光纤和多芯光纤，可以检测光纤弯曲方向。
