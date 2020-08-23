@@ -231,6 +231,26 @@ FOSS在测量范围（长光纤）、精度、维度（弯曲、扭曲和力）�
 \end{table}
 \FloatBarrier
 
+\subsection{渲染技术的选择}
+常用的渲染接口有OpenGL(Open Graphics Library)\cite{opengl}、DirectX(Direct eXtension)\cite{directx}
+和Metal\cite{metal}。
+
+OpenGL是一种用于渲染2D或3D图像的跨平台编程接口\cite{opengl}，它并不指任何一种特定实现，而是一种接口规范。
+DirectX接口仅用于Windows平台，而Metal仅用于Apple平台（macOS、iOS）。为了软件的通用性，本文选择OpenGL作为渲染接口。
+
+OpenGL接口有多个平台的实现，这些平台主要分为原生平台（Native Platform）和浏览器平台（Browser Platform），其中
+浏览器平台也称为Web平台。原生平台的软件通常存储在硬盘中并运行在特定操作系统上，
+如C绑定的WGL、GLX和CGL；iOS提供的C绑定和Android提供的Java和C绑定等。而Web平台的软件存储在服务器或浏览器缓存中，运行在浏览器上，
+它就是JavaScript绑定的WebGL。
+
+Web渲染平台相对于原生渲染平台往往有以下优势：
+\begin{itemize}
+\item 无需安装，访问网址即可运行；
+\item 跨平台，操作系统无关，可以在任何大多数浏览器上运行；
+\item 易于控制软件版本（热更新、回滚等）；
+\end{itemize}
+
+故本文选择WebGL为渲染引擎。
 
 \subsection{本文研究的内容}
 
