@@ -6,9 +6,9 @@
 本章将在\ref{sec:reconst}\nameref{sec:reconst}中分别讨论基于Cartesian坐标系和Frenet标架的两种重建算法，
 并提出一种改良算法，兼具重建精度高和运行速度快的优点。
 
-另外，本文将在\ref{sec:render}\nameref{sec:render}中具体介绍OpenGL和Threejs，以使用它们构建运行在浏览器上的渲染程序。
+另外，本章将在\ref{sec:render}\nameref{sec:render}中具体介绍OpenGL和Threejs，以使用它们构建运行在浏览器上的渲染程序。
 
-最后，在\ref{sec:net}\nameref{sec:net}中将会介绍HTTPS和WebSocket，这两种协议可以保证客户端和服务器之间的数据传输是实时且安全的。
+最后，在\ref{sec:net}\nameref{sec:net}中将会介绍HTTPS和WebSocket，这两种协议结合使用可以保证客户端和服务器之间的数据传输是实时且安全的。
 
 \subsection{曲线重建算法}
 \label{sec:reconst}
@@ -83,7 +83,7 @@ B样条曲线插值法和三次样条曲线插值法。
     $deg-1$阶的元素则需要通过$deg-2$阶的元素获得……以此类推，
     直到递归$deg$次以后，回退到0阶为止。
 
-    但是，回退到0阶的时候怎么算呢？B样条算法规定，回退到0阶时使用以下公式： 
+    但是，回退到0阶时如何算呢？B样条算法规定，回退到0阶时使用以下公式： 
 
     \begin{equation}
     B_{i, 0} = \left\{
