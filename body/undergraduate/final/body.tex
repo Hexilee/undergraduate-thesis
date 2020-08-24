@@ -517,7 +517,6 @@ Three.js是一个基于WebGL的3D图形库\cite{threejs}，它封装了很多实
 计算机网络模型一般指OSI七层模型，有时也使用TCP/IP四层模型。
 本小节主要介绍常用的应用层协议（OSI模型中的会话层、表示层和应用层；TCP/IP模型中的应用层）。
 
-
 \subsubsection{HTTP}
 
 超文本传输协议\cite{rfc7230}（Hyper-Text Transfer Protocol, HTTP）是一个用于传输超媒体文档（例如 HTML）的应用层协议。
@@ -547,31 +546,6 @@ WebSocket（简称WS）是浏览器提供的一种浏览器与服务器进行全
     \item 较少的控制开销。连接创建后，WS客户端、服务端进行数据交换时，协议控制的数据包头部较小。在不包含头部的情况下，服务端到客户端的包头只有2~10字节（取决于数据包长度），客户端到服务端的的话，需要加上额外的4字节的掩码。而HTTP/1.x每次通信都需要携带完整的头部；
     \item 支持扩展。WS协议定义了扩展，用户可以扩展协议，或者实现自定义的子协议（比如支持自定义压缩算法等）。
 \end{itemize}
-
-其握手过程如下：
-
-\begin{enumerate}
-    \item 客户端发起升级协议请求（基于HTTP/1.x）\\
-        \begin{lstlisting}
-GET / HTTP/1.1 
-Host: localhost:8080 
-Connection: Upgrade 
-Upgrade: websocket 
-Sec-WebSocket-Version: 13 
-Sec-WebSocket-Key: w4v7O6xFTi36lq3RNcgctw==
-        \end{lstlisting}
-        其中\fira{Sec-WebSocket-Version}不得低于13，\fira{Sec-WebSocket-Key}是一个随机字符串，用于防止无意的连接。
-    \item 服务端协议升级响应 \\
-        \begin{lstlisting}
-HTTP/1.1 101 Switching Protocols
-Connection: Upgrade
-Upgrade: websocket
-Sec-WebSocket-Accept: Oy4NRAQ13jhfONC7bP8dTKb4PTU=
-        \end{lstlisting}
-        其中\fira{Sec-WebSocket-Accept}由请求中的\fira{Sec-WebSocket-Key}生成，
-        用于客户端校验；如果客户端校验无误，则WS握手成功。
-\end{enumerate}
-
 
 \subsubsection{gRPC}
 
@@ -637,9 +611,8 @@ TLS是介于TCP协议和上层应用协议之间的安全层，其作用机理�
 并提出了一种改良的曲线重建算法和大致的实现步骤。这些理论和方案的具体实践将会在本章和下一章中介绍。
 
 本章主要介绍服务器端程序的实现。整个服务器端程序都采用Rust编程语言\cite{rust}构建，
-Rust是一门C或C++编程语言的替代语言，它速度惊人且内存利用率极高。
-由于没有运行时和垃圾回收，它能够胜任对性能要求特别高的服务，可以在嵌入式设备上运行，还能轻松和其他语言集成。
-它丰富的类型系统和所有权模型保证了内存安全和线程安全，让您在编译期就能够消除各种各样的错误。
+Rust是一门C或C++编程语言的替代语言，它速度与C语言接近且内存利用率极高。
+它丰富的类型系统和所有权模型保证了内存安全和线程安全，让开发者在编译期就能够消除各种错误。
 另外，它拥有出色的文档、友好的编译器和清晰的错误提示信息，还集成了一流的工具——包管理器和构建工具，
 智能地自动补全和类型检验的多编辑器支持，以及自动格式化代码等等。 
 
@@ -767,7 +740,7 @@ for id, connection in incomming() {
 \subsection{重建效果与误差分析}
 
 本节主要内容是重建算法的效果展示与误差分析。
-为了方便画图和分析，所用曲线为二维标准余弦曲线。
+为了便于画图和分析，所用曲线为二维标准余弦曲线。
 
 \subsubsection{结果与误差}
 
@@ -795,7 +768,7 @@ for id, connection in incomming() {
 \subsubsection{不同步长下的误差}
 
 三维曲线重建的过程本质上是一个三元积分，主要误差来自微段内的曲率变化。
-当步长$d_s$满足$lim_{d_s \rightarrow \infty}$时误差最小，且误差与步长正相关。
+当步长$d_s$满足$lim_{d_s \rightarrow 0}$时误差最小，且误差与步长正相关。
 
 
 图 ~\ref{fig:cos-diff-step} 为标准余弦曲线与不同插值步长的重建结果对比图，横、纵轴分别为空间中的$x$、$y$坐标。
