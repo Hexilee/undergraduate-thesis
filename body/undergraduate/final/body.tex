@@ -8,7 +8,9 @@
 
 另外，本章将在\ref{sec:render}\nameref{sec:render}中具体介绍OpenGL和Threejs，以使用它们构建运行在浏览器上的渲染程序。
 
-最后，在\ref{sec:net}\nameref{sec:net}中将会介绍HTTPS和WebSocket，这两种协议结合使用可以保证客户端和服务器之间的数据传输是实时且安全的。
+之后，在\ref{sec:net}\nameref{sec:net}中将介绍HTTPS和WebSocket，这两种协议结合使用可以保证客户端和服务器之间的数据传输是实时且安全的。
+
+最后，\ref{sec:programming-language}\nameref{sec:programming-language}中将简要介绍两种现代化的编程语言：Rust和TypeScript。
 
 \subsection{曲线重建算法}
 \label{sec:reconst}
@@ -606,6 +608,7 @@ TLS是介于TCP协议和上层应用协议之间的安全层，其作用机理�
 基于TLS的应用层协议都会在原本的协议名后加一个 “S”，如HTTPS、FTPS等，表示此连接是安全的。
 
 \subsection{编程语言}
+\label{sec:programming-language}
 
 \subsubsection{Rust}
 Rust编程语言\cite{rust}是一门C或C++编程语言的替代语言，它速度与C语言接近且内存利用率极高。
@@ -619,10 +622,21 @@ TypeScript编程语言\cite{typescript}是一门在JavaScript上构建的静态�
 在TypeScript中，标注类型可以是可选的，
 因为编译器强大的类型推断能力可使开发者无需大量标注即可享受代码补全、静态检查等高级的开发功能和更舒适的开发体验。
 
+\subsection{本章小结}
+本章主要讨论可视化软件构架所需的关键技术。
+其中改良的重建算法能准确而快速地根据连续化数据重建出曲线的空间各点坐标；
+HTTPS和WebSocket可以将服务端重建的坐标数据安全又实时地传输到客户端渲染程序；
+而OpenGL和Threejs可以根据曲线各点坐标，跨平台渲染地渲染出三维图形。
+
+然而，这些软件技术的应用需要以代码为载体。具体软件的构建细节将在
+\ref{sec:server}\nameref{sec:server}和\ref{sec:client}\nameref{sec:client}
+两章中介绍。
+
+
 \section{服务器端程序实现}
 \label{sec:server}
-上章主要介绍了可视化软件构建的关键技术，有曲线重建算法、三维渲染技术、网络传输技术和编程语言，
-本章主要介绍服务器端程序的实现。
+本章主要介绍服务器端程序的实现，主要内容包括数据上推流注册模块、曲线重建模块和数据下推流订阅模块，
+并在最后分析算法实现的重建效果与误差。
  
 \subsection{数据上推流注册模块}
 这个模块需要接收客户端上推的原始数据。所使用的协议为WebSocket on HTTPS。
@@ -723,7 +737,7 @@ for ka, kb in curvatures {
 }
 \end{lstlisting}
 
-其中$ri$为旋转矩阵，初始值等于单位矩阵；ti为每个微元内的平移矩阵；ai为总平移矩阵。
+其中$ri$为旋转矩阵，初始值等于单位矩阵；$ti$为每个微元内的平移矩阵；$ai$为总平移矩阵。
 重建出的坐标点数据如代码块~\ref{lst:positions}所示。
 
 \subsection{数据下推流订阅模块}
@@ -813,12 +827,16 @@ for id, connection in incomming() {
 故$0.01$更适于本文软件构建。
 
 \FloatBarrier
+
+\subsection{本章小结}
+本章主要介绍服务器端程序的实现细节，并分析了重建结果与误差。
+在$0.01$的插值步长下标准余弦曲线重建的相对误差在$0.03$以内，可以认为重建准确度良好；
+另外，在比较了$0.1$、$0.01$、$0.001$三种插值步长下的重建结果后可以认为$0.01$的插值步长更适于本文软件构建。
+
 \clearpage
 
 \section{客户端程序实现}
 \label{sec:client}
-上章主要介绍了服务器端程序的实现，包括数据上推流注册、曲线重建和数据下推流订阅三个模块。
-其中数据上推流注册和数据下推流订阅两个功能均需要相应客户端的支持。
 本章主要介绍两个客户端程序的实现，它们分别是原始数据推流客户端和渲染客户端。
 
 \subsection{原始数据推流客户端}
@@ -846,16 +864,7 @@ for raw_data in sense() {
 \subsection{渲染客户端}
 
 渲染客户端的主要功能是根据服务器下推的点列实时渲染管壁或轴线。
-三维渲染采用WebGL渲染引擎和Threejs库，
-WebGL是浏览器上的OpenGL实现，用于在任何兼容的Web浏览器中呈现交互式3D和2D图形\cite{webgl}。
-WebGL通过引入一个与OpenGL ES 2.0紧密相符合的API，可以在HTML5<canvas>元素中使用。
-
-目前支持WebGL的浏览器有：Firefox 4+、Google Chrome 9+、Opera 12+、Safari 5.1+和Internet Explorer 11+；
-但是WebGL一些特性也需要用户的硬件设备支持。
-
-WebGL几乎是完全地“跨平台”，使用任何支持WebGL的浏览器打开网页即可完成客户端渲染，而无需下载另外的软件或浏览器插件。
-
-Three.js是一个基于WebGL的3D图形库\cite{threejs}，它封装了很多实用的图形组件。
+三维渲染采用WebGL渲染引擎和Threejs库，并使用TypeScript构建。
 
 \subsubsection{数据订阅模块}
 渲染流程的第一步是向服务器订阅重建的坐标数据，并根据坐标数据拟合一条Catmull Rom曲线。
@@ -926,7 +935,7 @@ orbitControls.target = [0, 0, 0]
 
 \subsubsection{环境光}
 
-没有施加环境光照的情况下摄像头是拍不到任何图像的。常用的环境光主要有三类：全局光、平行光和点光源。
+没有施加环境光照的场景下摄像头是无法成像的。常用的环境光主要有三类：全局光、平行光和点光源。
 全局光均匀地照射在场景的每一个物体上，不会产生阴影或者反光，非常易于计算但过于朴素；
 平行光会产生阴影和反光效果，并且相对易于计算；点光源计算难度较大，但视觉效果较好。
 
@@ -941,6 +950,12 @@ spotLight := new DirectionalLight(0x505050)
 spotLight.position.set(0, 1000, 0)
 scene.add(spotLight)
 \end{lstlisting}
+
+\subsection{本章小结}
+本章主要讨论客户端软件的构建。原始数据推流客户端主要负责将传感器感测的数据转为原始数据的格式并上推给服务器；
+渲染客户端主要负责接收服务器下推的坐标数据并渲染出三维图形，以及给终端用户提供必要的交互功能。
+
+至此软件的构建已介绍完毕，下一章将展示软件的实际运行效果。
 
 \clearpage
 
@@ -1062,7 +1077,7 @@ scene.add(spotLight)
 原始曲率数据入口和WebGL跨平台渲染保证软件的通用性优秀；
 HTTPS保证软件的安全性极佳；
 在\nameref{sec:error-analyze}中相对误差在$0.03$以内，准确性良好；
-实时性虽然要考虑网络带宽等不确定因素，但至少在\nameref{sec:pre}中渲染稳定60帧，表现极佳。
+实时性虽要考虑网络带宽等不确定因素，但至少在\nameref{sec:pre}中渲染稳定60帧，表现极佳。
 
 在软件构建技术方面，使用的全部是当代最先进的技术。
 其中WebSocket正支持着成千上万的应用；
