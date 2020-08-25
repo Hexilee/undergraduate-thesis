@@ -748,46 +748,66 @@ for id, connection in incomming() {
 本节主要内容是重建算法的效果展示与误差分析。
 为了便于画图和分析，所用曲线为二维标准余弦曲线。
 
+本小节中“绝对误差”指在任意$x=x_i$处，标准曲线$y$轴坐标$y_i$与重建曲线$y$轴坐标$y_i'$之差的绝对值；
+而“相对误差”指在任意$x=x_i$处，“绝对误差”除以此处标准曲线弧长$s_i$。
+
 \subsubsection{结果与误差}
 \FloatBarrier
-图 ~\ref{fig:cos} 为标准余弦曲线与插值步长为$0.01$时的重建结果对比图，横、纵轴分别为空间中的$x$、$y$坐标。
-展示了随横坐标$x$变化的重建误差，误差定义为两曲线$y$轴坐标之差的绝对值。
+图~\ref{fig:cos}为插值步长为$0.01$时的余弦曲线重建结果。
+其中图~\ref{cos:result}为重建结果对比图，横、纵轴分别为空间中的$x$、$y$坐标；
+图~\ref{cos:error}展示了随横坐标$x$变化的绝对误差；
+图~\ref{cos:relative-error}展示了随横坐标$x$变化的相对误差。
 
 \begin{figure}
 \centering
-\subfloat[重建结果]{\includegraphics{cos.pdf}}\\
-\subfloat[绝对误差]{\includegraphics[scale=0.5]{cos-error.pdf}}
-\subfloat[相对误差]{\includegraphics[scale=0.5]{cos-relative-error.pdf}}\\
+\subfloat[重建结果]{\includegraphics{cos.pdf}\label{cos:result}}\\
+\subfloat[绝对误差]{\includegraphics[scale=0.5]{cos-error.pdf}\label{cos:error}}
+\subfloat[相对误差]{\includegraphics[scale=0.5]{cos-relative-error.pdf}\label{cos:relative-error}}\\
 \caption{余弦曲线重建结果与误差}
 \label{fig:cos}
 \end{figure}
 
-由图可知标准余弦曲线一个周期内的重建误差都在$0.05$以内，重建曲线与标准曲线具有高度一致的趋势。
+由图可知标准余弦曲线一个周期内的绝对误差在$0.05$以内，而相对误差在$0.03$以内，重建曲线与标准曲线具有高度一致的趋势。
+
+多维曲线重建的过程本质上是一个多元积分，主要误差来自微段内的曲率变化。
+当步长$d_s$满足$lim_{d_s\rightarrow 0}$时误差最小，且误差增量与$d_s$正相关。
+
+如果将重建曲线$y$坐标大于标准曲线称为“正误差”，反之则为“负误差”。
+那对凹函数曲线而言，误差的增量为正，正误差增大，负误差减小；凸函数则相反。
+
+在标准余弦函数第一个周期内，$x$区间$[0, \frac{\pi}{2})$、$[\frac{3\pi}{2}, 2\pi)$上为凹函数，
+在$x$区间$[\frac{\pi}{2}, \frac{3\pi}{2})$上为凸函数，故有：
+
+\begin{itemize}
+\item 区间$[0, \frac{\pi}{2})$上误差的增量为正，误差也为正，误差递增；
+\item 区间$[\frac{\pi}{2}, \frac{3\pi}{2})$上误差的增量为负；误差为正则减小，减小到零后又增大；
+\item 区间$[\frac{3\pi}{2}, 2\pi)$上误差的增量为正；误差为正则增大，误差为负则减小；
+\end{itemize}
+
+可知实际误差变化与理论大致相符。
 
 \FloatBarrier
 
 \subsubsection{不同步长下的误差}
 \FloatBarrier
 
-三维曲线重建的过程本质上是一个三元积分，主要误差来自微段内的曲率变化。
-当步长$d_s$满足$lim_{d_s \rightarrow 0}$时误差最小，且误差与步长正相关。
-
-
-图 ~\ref{fig:cos-diff-step} 为标准余弦曲线与不同插值步长的重建结果对比图，横、纵轴分别为空间中的$x$、$y$坐标。
-图 ~\ref{fig:cos-diff-step-error} 展示了横坐标$x$变化下不同插值步长的重建误差。
+图~\ref{fig:cos-diff-step}为不同插值步长下的余弦曲线重建结果。
+其中图~\ref{cos-diff-step:result}为重建结果对比图，横、纵轴分别为空间中的$x$、$y$坐标；
+图~\ref{cos-diff-step:error}展示了随横坐标$x$变化的绝对误差；
+图~\ref{cos-diff-step:relative-error}展示了随横坐标$x$变化的相对误差。
 
 \begin{figure}
 \centering
-\subfloat[重建结果]{\includegraphics{cos-diff-step.pdf}}\\
-\subfloat[绝对误差]{\includegraphics[scale=0.5]{cos-diff-step-error.pdf}}
-\subfloat[相对误差]{\includegraphics[scale=0.5]{cos-diff-step-relative-error.pdf}}\\
+\subfloat[重建结果]{\includegraphics{cos-diff-step.pdf}\label{cos-diff-step:result}}\\
+\subfloat[绝对误差]{\includegraphics[scale=0.5]{cos-diff-step-error.pdf}\label{cos-diff-step:error}}
+\subfloat[相对误差]{\includegraphics[scale=0.5]{cos-diff-step-relative-error.pdf}\label{cos-diff-step:relative-error}}\\
 \caption{不同步长下的余弦曲线重建}
 \label{fig:cos-diff-step}
 \end{figure}
 
-可见重建误差趋势符合预期，误差与步长正相关。
+可见重建误差趋势符合预期，误差增量绝对值与插值步长正相关。
 但步长从$0.01$减少到$0.001$带来的准确性提升并不是很明显，却增加了十倍的计算负担，
-故可认为$0.01$为最适插值步长。
+故$0.01$更适于本文软件构建。
 
 \FloatBarrier
 \clearpage
