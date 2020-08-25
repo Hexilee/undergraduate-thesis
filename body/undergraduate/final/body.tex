@@ -749,29 +749,25 @@ for id, connection in incomming() {
 为了便于画图和分析，所用曲线为二维标准余弦曲线。
 
 \subsubsection{结果与误差}
-
-图 ~\ref{fig:cos} 为标准余弦曲线与插值步长为$0.01$时的重建结果对比图，横、纵轴分别为空间中的$x$、$y$坐标。
-图 ~\ref{fig:cos-error} 展示了随横坐标$x$变化的重建误差，误差定义为两曲线$y$轴坐标之差的绝对值。
-
 \FloatBarrier
+图 ~\ref{fig:cos} 为标准余弦曲线与插值步长为$0.01$时的重建结果对比图，横、纵轴分别为空间中的$x$、$y$坐标。
+展示了随横坐标$x$变化的重建误差，误差定义为两曲线$y$轴坐标之差的绝对值。
+
 \begin{figure}
 \centering
-\includegraphics{cos.pdf}
-\caption{余弦曲线重建结果}
+\subfloat[重建结果]{\includegraphics{cos.pdf}}\\
+\subfloat[绝对误差]{\includegraphics[scale=0.5]{cos-error.pdf}}
+\subfloat[相对误差]{\includegraphics[scale=0.5]{cos-relative-error.pdf}}\\
+\caption{余弦曲线重建结果与误差}
 \label{fig:cos}
 \end{figure}
 
-\begin{figure}
-\centering
-\includegraphics{cos-error.pdf}
-\caption{余弦曲线重建误差}
-\label{fig:cos-error}
-\end{figure}
-\FloatBarrier
-
 由图可知标准余弦曲线一个周期内的重建误差都在$0.05$以内，重建曲线与标准曲线具有高度一致的趋势。
 
+\FloatBarrier
+
 \subsubsection{不同步长下的误差}
+\FloatBarrier
 
 三维曲线重建的过程本质上是一个三元积分，主要误差来自微段内的曲率变化。
 当步长$d_s$满足$lim_{d_s \rightarrow 0}$时误差最小，且误差与步长正相关。
@@ -780,26 +776,20 @@ for id, connection in incomming() {
 图 ~\ref{fig:cos-diff-step} 为标准余弦曲线与不同插值步长的重建结果对比图，横、纵轴分别为空间中的$x$、$y$坐标。
 图 ~\ref{fig:cos-diff-step-error} 展示了横坐标$x$变化下不同插值步长的重建误差。
 
-\FloatBarrier
 \begin{figure}
 \centering
-\includegraphics{cos-diff-step.pdf}
-\caption{不同步长下的重建结果}
+\subfloat[重建结果]{\includegraphics{cos-diff-step.pdf}}\\
+\subfloat[绝对误差]{\includegraphics[scale=0.5]{cos-diff-step-error.pdf}}
+\subfloat[相对误差]{\includegraphics[scale=0.5]{cos-diff-step-relative-error.pdf}}\\
+\caption{不同步长下的余弦曲线重建}
 \label{fig:cos-diff-step}
 \end{figure}
-
-\begin{figure}
-\centering
-\includegraphics{cos-diff-step-error.pdf}
-\caption{不同步长下的重建误差}
-\label{fig:cos-diff-step-error}
-\end{figure}
-\FloatBarrier
 
 可见重建误差趋势符合预期，误差与步长正相关。
 但步长从$0.01$减少到$0.001$带来的准确性提升并不是很明显，却增加了十倍的计算负担，
 故可认为$0.01$为最适插值步长。
 
+\FloatBarrier
 \clearpage
 
 \section{客户端程序实现}
