@@ -13,7 +13,7 @@ FOSS可以由三芯光纤布拉格光栅（Fiber Bragg Grating, FBG）传感器�
 仅是OpenGL\cite{opengl}技术本身就有JavaScript绑定的WebGL\cite{webgl}；
 C绑定的WGL、GLX和CGL；iOS提供的C绑定和Android提供的Java和C绑定等。
 
-本章主要讨论\nameref{sec:ss}和\nameref{sec:render-choise}，并提出一种通用实时三维可视化软件的架构。
+本章主要讨论\nameref{sec:ss}和\nameref{sec:render-choise}，并提出一种三维可视化软件的架构。
 
 \subsection{形变传感器的研究方向及进展}
 \label{sec:ss}
@@ -38,6 +38,8 @@ C绑定的WGL、GLX和CGL；iOS提供的C绑定和Android提供的Java和C绑定
 它们各自的简介、优缺点和应用如表~\ref{table:css}所示。
 
 \begin{table}[h]\small
+\caption{接触式CSS的优缺点对比\cite{recent-dev-in-foss}}
+\label{table:css}
 \begin{center}
 \begin{tabular}{p{0.16\textwidth}p{0.16\textwidth}p{0.24\textwidth}p{0.24\textwidth}}
 \toprule
@@ -126,8 +128,6 @@ MEMS传感器 & 结合了加速度计、陀螺仪和磁力计的微电机系统�
 \bottomrule
 \end{tabular}
 \end{center}
-\caption{接触式CSS的优缺点对比\cite{recent-dev-in-foss}}
-\label{table:css}
 \end{table}
 
 分析可知这三种CSS传感器各自的适用场景：
@@ -165,6 +165,8 @@ FOSS在测量范围（长光纤）、精度、维度（弯曲、扭曲和力）�
 为新一代FOSS构建通用三维可视化软件的需求也逐渐显现。
 
 \begin{table}\footnotesize
+\caption{FOSS的发展趋势\cite{recent-dev-in-foss}}
+\label{table:foss}
 \begin{center}
 \tabcolsep=0.10cm
 \begin{tabular}{p{0.16\textwidth}cp{0.64\textwidth}}
@@ -228,8 +230,6 @@ FOSS在测量范围（长光纤）、精度、维度（弯曲、扭曲和力）�
 \bottomrule
 \end{tabular}
 \end{center}
-\caption{FOSS的发展趋势\cite{recent-dev-in-foss}}
-\label{table:foss}
 \end{table}
 \FloatBarrier
 
@@ -260,7 +260,7 @@ Web渲染平台相对于原生渲染平台有以下优势：
 
 一种可视化软件的架构如图 ~\ref{fig:software}。
 其工作流程可分为原始数据上推、数据预处理（连续化）、曲线坐标重建、重建数据下推和图形渲染五个步骤，
-涉及的主要数据接口有原始数据、连续数据和重建数据。
+涉及的主要数据接口有原始数据、连续化数据和重建数据。
 
 \begin{figure}
 \centering
