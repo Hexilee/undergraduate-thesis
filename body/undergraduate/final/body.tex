@@ -613,8 +613,6 @@ Rust编程语言\cite{rust}是一门C或C++编程语言的替代语言，它速�
 另外，它拥有出色的文档、友好的编译器和清晰的错误提示信息，还集成了一流的工具——包管理器和构建工具，
 智能地自动补全和类型检验的多编辑器支持，以及自动格式化代码等等。
 
-为保证软件的实时性，整个服务器端程序都采用Rust构建。
-
 \subsubsection{TypeScript}
 
 \section{服务器端程序实现}
@@ -949,27 +947,10 @@ scene.add(spotLight)
 实时动态展示网址：\href{https://curve.hexilee.me:8000/}{https://curve.hexilee.me:8000/}。
 
 \subsection{使用说明}
+\FloatBarrier
 
 图 ~\ref{fig:tube-default} 是软件的默认渲染结果。
-
-\FloatBarrier
-\begin{figure}
-\centering
-\includegraphics[scale=0.3]{tube-default.png}
-\caption{管壁渲染}
-\label{fig:tube-default}
-\end{figure}
-
 界面左上角是帧率监控，如图 ~\ref{fig:fps} 表示帧率区间$18-60$，当前帧率$60$。
-
-\begin{figure}
-\centering
-\includegraphics[scale=0.3]{fps.png}
-\caption{帧率监控}
-\label{fig:fps}
-\end{figure}
-\FloatBarrier
-
 界面顶端为交互说明：
 
 \begin{itemize}
@@ -989,7 +970,20 @@ scene.add(spotLight)
 \item \textbf{grid: }勾选显示辅助栅格；
 \end{enumerate}
 
-\FloatBarrier
+\begin{figure}
+\centering
+\includegraphics[scale=0.3]{tube-default.png}
+\caption{管壁渲染}
+\label{fig:tube-default}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.3]{fps.png}
+\caption{帧率监控}
+\label{fig:fps}
+\end{figure}
+
 \begin{figure}
 \centering
 \includegraphics[scale=0.3]{control-pad.png}
@@ -999,69 +993,59 @@ scene.add(spotLight)
 \FloatBarrier
 
 \subsection{渲染效果}
-上一节中我们展示了默认的渲染效果并介绍了软件界面和使用说明，
+上一节中展示了默认的渲染效果并介绍了软件界面和使用说明，
 本节将会展示在各种选项下的渲染效果。
 
 \begin{enumerate}
 
 \item \textbf{改变管壁颜色} \\
 改变管壁颜色为$\#00FFFF$：
-\FloatBarrier
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics[scale=0.3]{change-color.png}
 \caption{改变管壁颜色}
 \label{fig:change-color}
 \end{figure}
-\FloatBarrier
 
 \item \textbf{改变背景颜色} \\
 改变背景颜色为$\#222222$：
 
-\FloatBarrier
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics[scale=0.3]{change-bg-color.png}
 \caption{改变背景颜色}
 \label{fig:change-bg-color}
 \end{figure}
-\FloatBarrier
 
 \item \textbf{启用坐标轴} \\
 勾选选项$axes$：
 
-\FloatBarrier
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics[scale=0.3]{tube-with-axes.png}
 \caption{启用坐标轴}
 \label{fig:tube-with-axes}
 \end{figure}
-\FloatBarrier
 
 \item \textbf{启用坐标轴和栅格} \\
 勾选选项$axes$和$grid$：
 
-\FloatBarrier
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics[scale=0.3]{tube-with-axes-grid.png}
 \caption{启用坐标轴和栅格}
 \label{fig:tube-with-axes-grid}
 \end{figure}
-\FloatBarrier
 
 \item \textbf{轴线渲染} \\
 渲染模式$mode$切换到选项$line$：
 
-\FloatBarrier
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics[scale=0.3]{line.png}
 \caption{轴线渲染}
 \label{fig:line}
 \end{figure}
-\FloatBarrier
 
 \end{enumerate}
 
