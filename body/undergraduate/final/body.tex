@@ -300,9 +300,6 @@ $o_{i+1}$在运动坐标系$o_i-a_ib_i$中的相对坐标$t_{i+1}$满足：
     \right]
     \end{equation}
     
-
-故可得：
-
 绝对坐标系$o_0-a_0b_0$到运动坐标系$o_i-a_ib_i$的旋转矩阵$R_i$满足：
     \begin{equation}
     R_i = \prod_{k = 0}^{i-1} r_{k, k+1}
@@ -338,7 +335,7 @@ $o_i$在绝对坐标系中的坐标 $T_i$满足：
 \FloatBarrier
 
 如图 ~\ref{fig:coordinate-reconst} 所示，在三维情况下，我们以曲线的每个$ds$微段的端点$o_i$为原点建立运动坐标系\cite{three-dimensional-curve} $o_i-a_ib_ic_i$，
-其中$\vec{c_i}$是曲线在$o_i$点的切向量，$\vec{a_i}$是法向量，$\vec{b_i}$是副法向量。
+其中$\vec{c_i}$是曲线在$o_i$点的切向量，$\vec{a_i}$是法向量，$\vec{b_i}$是副法向量，则有：
 \begin{equation}
 \vec{b_i} = \vec{a_i} \times \vec{c_i}
 \end{equation}
@@ -352,7 +349,7 @@ $o_i$在绝对坐标系中的坐标 $T_i$满足：
 \end{equation}
 要求运动坐标系$o_i-a_ib_ic_i$到运动坐标系$o_{i+1}-a_{i+1}b_{i+1}c_{i+1}$的旋转矩阵$r_{i, i+1}$，需先求$\vec{k_i}$与$\vec{a_i}$的夹角$\phi_i$。
 
-已知两个曲率分量$kx$和$ky$，将各运动坐标轴的$o-ab$平面叠加可得到下图的$o-xy$平面，其中$x$和$y$分别是两个曲率方向。由于$\vec{a}$是曲线法向量，故$\vec{a_{i+1}}$与$\vec{k_i}$同向，即$\vec{a_{i+1}}$与$\vec{a_{i+2}}$的夹角$\phi_{i+1}$是合曲率向量$\vec{k_i}$与$\vec{k_{i+1}}$的夹角。
+已知两个曲率分量$kx$和$ky$，将各运动坐标轴的$o-ab$平面叠加可得到图\ref{fig:iterate-phi}的$o-xy$平面，其中$x$和$y$分别是两个曲率方向。由于$\vec{a}$是曲线法向量，故$\vec{a_{i+1}}$与$\vec{k_i}$同向，即$\vec{a_{i+1}}$与$\vec{a_{i+2}}$的夹角$\phi_{i+1}$是合曲率向量$\vec{k_i}$与$\vec{k_{i+1}}$的夹角。
 
 \FloatBarrier
 \begin{figure}
@@ -406,8 +403,6 @@ k_i &= kx_i + ky_i \\
       \end{matrix}
     \right]
     \end{equation}
-
-故可得：
 
 绝对坐标系$o_0-a_0b_0c_0$到临时坐标系$o_i'-a_i'b_i'c_i'$的旋转矩阵$R_i'$满足：
     \begin{equation}
@@ -939,7 +934,7 @@ orbitControls.target = [0, 0, 0]
 全局光均匀地照射在场景的每一个物体上，不会产生阴影或者反光，非常易于计算但过于朴素；
 平行光会产生阴影和反光效果，并且相对易于计算；点光源计算难度较大，但视觉效果较好。
 
-本文使用一个RGB颜色为$\#111111$的全局光和一个颜色为$\#505050$的点光源组成复合光源，
+本文使用一个RGB颜色为#111111的全局光和一个颜色为#505050的点光源组成复合光源，
 点光源位于空间中坐标$[0, 1000, 0]$处。
 全局光和点光源分别使用Threejs提供的$AmbientLight$和$DirectionalLight$，
 伪代码如下：
@@ -961,8 +956,6 @@ scene.add(spotLight)
 
 \section{软件运行展示}
 \label{sec:pre}
-第一章中介绍了一种改良的重建算法和曲线重建可视化的实现步骤，
-第二章和第三章分别介绍了服务器端和客户端程序的实现细节。
 本章将介绍客户端与服务器端对接后，软件整体的使用说明和渲染效果。
 展示所用曲线为$[0, 2\pi]$区间内的动态三维余弦曲线，
 实时动态展示网址：\href{https://curve.hexilee.me:8000/}{https://curve.hexilee.me:8000/}。
@@ -1020,7 +1013,7 @@ scene.add(spotLight)
 \begin{enumerate}
 
 \item \textbf{改变管壁颜色} \\
-改变管壁颜色为$\#00FFFF$：
+改变管壁颜色为#00FFFF：
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.3]{change-color.png}
@@ -1029,7 +1022,7 @@ scene.add(spotLight)
 \end{figure}
 
 \item \textbf{改变背景颜色} \\
-改变背景颜色为$\#222222$：
+改变背景颜色为#222222：
 
 \begin{figure}[H]
 \centering
