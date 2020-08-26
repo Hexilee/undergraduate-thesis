@@ -639,7 +639,7 @@ HTTPS和WebSocket可以将服务端重建的坐标数据安全又实时地传输
 
 hyper是一个专注正确性和高性能的http库，但过于底层，使用不便。
 roa是一个类koajs\cite{koajs}的web框架，灵活而易于拓展。
-数据上推流注册模块基于roa框架的HTTPS和WebSocket支持，给每个注册的数据源分配唯一的id。
+数据上推流注册模块基于roa框架的HTTPS和WebSocket支持，给每个注册的数据源分配唯一的$id$。
 
 数据源注册请求就是一个WebSocket请求：
 
@@ -758,7 +758,8 @@ for id, connection in incomming() {
 \label{sec:error-analyze}
 
 本节主要内容是重建算法的效果展示与误差分析。
-为了便于画图和分析，所用曲线为二维标准余弦曲线。
+为了便于画图和分析，所用构建对象为二维标准余弦曲线。
+在二维标准余弦曲线的第一个周期内，间隔$\frac{\pi}{4}$取采样点以生成原始数据。
 
 本小节中“绝对误差”指在任意$x=x_i$处，标准曲线$y$轴坐标$y_i$与重建曲线$y$轴坐标$y_i'$之差的绝对值；
 而“相对误差”指在任意$x=x_i$处，“绝对误差”除以此处标准曲线弧长$s_i$。
@@ -934,7 +935,7 @@ orbitControls.target = [0, 0, 0]
 全局光均匀地照射在场景的每一个物体上，不会产生阴影或者反光，非常易于计算但过于朴素；
 平行光会产生阴影和反光效果，并且相对易于计算；点光源计算难度较大，但视觉效果较好。
 
-本文使用一个RGB颜色为#111111的全局光和一个颜色为#505050的点光源组成复合光源，
+本文使用一个RGB颜色为\#111111的全局光和一个颜色为\#505050的点光源组成复合光源，
 点光源位于空间中坐标$[0, 1000, 0]$处。
 全局光和点光源分别使用Threejs提供的$AmbientLight$和$DirectionalLight$，
 伪代码如下：
@@ -1013,7 +1014,7 @@ scene.add(spotLight)
 \begin{enumerate}
 
 \item \textbf{改变管壁颜色} \\
-改变管壁颜色为#00FFFF：
+改变管壁颜色为\#00FFFF：
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.3]{change-color.png}
@@ -1022,7 +1023,7 @@ scene.add(spotLight)
 \end{figure}
 
 \item \textbf{改变背景颜色} \\
-改变背景颜色为#222222：
+改变背景颜色为\#222222：
 
 \begin{figure}[H]
 \centering
