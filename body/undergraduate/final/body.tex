@@ -433,88 +433,48 @@ T_i = \left[
 
 \end{itemize}
 
-\subsection{三维渲染技术}
+\subsection{渲染引擎选择}
 \label{sec:render}
 
 三维渲染是通过电脑计算的方式把模型从三维模型网格呈现出二维真实感高的图像\cite{3DModels_SurveyPaper}，
 计算过程包含光线及辅助光线、材料的材质和纹理、相机相关设置等综合变量\cite{scientce-of-3d-rendering}。
 
 三维渲染包括实时渲染和非实时渲染。
-
 实时渲染主要应用在游戏领域，电脑会实时的计算和展示所渲染的结果，帧率在20-120左右。
-因此需要在帧率一定的情况下最大化渲染的真实性。计算机在图像处理的过程中会用到一些“技巧”以迎合肉眼感官，
-这些“技巧”包括镜头光晕（lends flare）、景深（depth of field）和动态模糊（motion blur）等。
-计算机的算力决定了渲染的真实感，通常需要GPU来协助完成。
-
 非实时渲染通常是电影或视频，借助计算机有限的算力，通过延长渲染时间达到更加真实的效果。
-射线追踪（ray tracing）和辐射度算法（radiosity）是非实时渲染常用的技巧，以达到更加真实的感觉。
-随着技术的发展，不同种类的物质形式有了更精确的计算技巧，
-例如粒子系统（模拟雨、烟和火）、容积取样（模拟雾、灰尘）、焦散性质和子面散射(subsurface scattering)。
-渲染过程中把不同层的物质分开计算后合成一个最终布景。
 
-本小节主要介绍实时渲染中常用的技术。
+可视化软件需要实时渲染，本小节主要讨论实时渲染引擎的选择。
 
+常用的实时渲染接口有OpenGL(Open Graphics Library)\cite{opengl}、DirectX(Direct eXtension)\cite{directx}
+和Metal\cite{metal}。
 
-\subsubsection{OpenGL}
+OpenGL是一种用于渲染2D或3D图像的跨平台编程接口\cite{opengl}，它并不指任何一种特定实现，而是一种接口规范。
+DirectX接口仅用于Windows平台，而Metal仅用于Apple平台（macOS、iOS）。为了软件的通用性，本文选择OpenGL作为渲染接口。
 
+OpenGL接口有多个平台的实现，这些平台主要分为原生平台（Native Platform）和浏览器平台（Browser Platform），其中
+浏览器平台也称为Web平台。原生平台的软件通常存储在硬盘中并运行在特定操作系统上，
+如C绑定的WGL、GLX和CGL；iOS提供的C绑定和Android提供的Java和C绑定等。而Web平台的软件存储在服务器或浏览器缓存中，运行在浏览器上，
+它就是JavaScript绑定的WebGL。
 
-OpenGL(Open Graphics Library)是一种用于渲染2D或3D图像的跨平台编程接口\cite{opengl}，
-它并不指任何一种特定实现，而是一种接口规范。与之类似的还有仅用于Windows平台的Direct3D。
-
-OpenGL由Khronos Group开发维护，GPU的硬件开发商则需要提供满足OpenGL规范的驱动程序，
-它们负责将OpenGL定义的API命令翻译为GPU指令。
-
-这个接口由近350个不同的函数调用组成，用来从简单的图形数据绘制复杂的三维图像，
-常用于CAD、虚拟现实、科学可视化程序和电子游戏开发。 
-
-它有很多的具体实现和编程语言绑定，如JavaScript绑定的WebGL；
-C绑定的WGL、GLX和CGL；iOS提供的C绑定；Android提供的Java和C绑定。
-
-
-\subsubsection{WebGL和Three.js}
-
-
-WebGL是浏览器上的OpenGL实现，用于在任何兼容的Web浏览器中呈现交互式3D和2D图形\cite{webgl}。
-WebGL通过引入一个与OpenGL ES 2.0紧密相符合的API，可以在HTML5 <canvas>元素中使用。
+WebGL相对于原生渲染引擎有两大优势：
+\begin{itemize}
+\item 跨平台，操作系统无关，可以在任何大多数浏览器上运行；
+\item 易于控制软件版本（热更新、回滚等）；
+\end{itemize} 
 
 目前支持WebGL的浏览器有：Firefox 4+、Google Chrome 9+、Opera 12+、Safari 5.1+和Internet Explorer 11+；
 但是WebGL一些特性也需要用户的硬件设备支持。
 
 WebGL几乎是完全地“跨平台”，使用任何支持WebGL的浏览器打开网页即可完成客户端渲染，而无需下载另外的软件或浏览器插件。
+同样为了渲染客户端的通用性，本文选择WebGL作为渲染引擎。
 
-Three.js是一个基于WebGL的3D图形库\cite{threejs}，它封装了很多实用的图形组件。由Ricardo Cabello在2010四月于GitHub首次发布。
-它的起源可以追溯到他在本世纪初演示场景的参与。代码最初使用ActionScript，稍后2009年移植到JavaScript。在Cabello看来，
-转移到JavaScript有两个优点：每次运行前没有编译代码和平台独立性。
-随着WebGL的到来，Paul Brunt增加渲染功能，这使得Three.js设计与绘制的代码成为一个模块，而不是核心本身。
-它提供了如下功能：
+Threejs是一个基于WebGL的三维图形库\cite{threejs}，它封装了很多实用的图形组件，便于程序构建。
 
-\begin{itemize}
-    \item 效果：浮雕，对眼和视差屏障；
-    \item 场景：在运行时添加和删除对象、雾；
-    \item 镜头：视角和正字法；控制器：轨迹球、FPS、路径等；
-    \item 动画：电枢、运动学、逆运动学、变形和关键帧；
-    \item 灯光：环境、方向、点和点光；阴影：投射和接收；
-    \item 材料：Lambert、海防、光滑阴影等；
-    \item 材质：访问完整的OpenGL着色语言（GLSL）能力：镜头光晕；
-    \item 对象：网格、粒子、精灵、线、带、骨头等；
-    \item 几何：平面、立方体、球体、圆环、3D文本等；修改器：车床、挤压和管；
-    \item 数据加载器：二进制、图像、JSON和场景；
-    \item 事业：全套时间和三维数学函数包括锥、矩阵、四元、UVs等；
-    \item 输入输出：与three.js兼容的 JSON文件：Blender、openctm、FBX、Max，OBJ；
-    \item 支持：API文档持续更新，公共论坛和维基全面运作；
-    \item 例子：超过150个文件的编码例子加字体、模型、纹理、声音和其他支持文件；
-    \item 调试：Stats.js、WebGL检查器、Three.js检查器。
-\end{itemize}
-
-另外Three.js依据MIT公用许可证发布，完全开源开放，且可以在所有支持WebGL 1.0的浏览器中运行。
 
 \subsection{网络数据传输技术}
 \label{sec:net}
 
-计算机网络模型一般指OSI七层模型，有时也使用TCP/IP四层模型。
-本小节主要介绍常用的应用层协议（OSI模型中的会话层、表示层和应用层；TCP/IP模型中的应用层）。
-
-\subsubsection{HTTP}
+既然本文选择了WebGL作为渲染引擎，网络数据传输就必须基于超文本传输协议。
 
 超文本传输协议\cite{rfc7230}（Hyper-Text Transfer Protocol, HTTP）是一个用于传输超媒体文档（例如 HTML）的应用层协议。
 它是为Web浏览器与Web服务器之间的通信而设计的，但也可以用于其他目的。
@@ -529,6 +489,11 @@ HTTP协议目前有1.0，1.1和2.0三个版本，前两个版本是包结构兼�
 （不过也有例外，比如说可以由服务端发起升级到传输层安全协议\cite{rfc8446}（Transport Layer Security, TLS）），
 服务端可以选择是否要升级到新协议。借助这一技术，连接可以以常用的协议启动（如HTTP/1.1），
 随后再升级到HTTP/2甚至是WebSocket\cite{rfc6455}。
+
+为了保证软件数据传输的实时性，所使用的传输协议必须支持双向流，以实现原始数据上推客户端到服务器的上推流和服务器到渲染客户端的下推流。
+而HTTP/1.x是不支持双向流的，可选的升级方案有WebSocke和HTTP/2。
+
+另外，基于TCP的HTTP协议是不安全的，为了保证软件数据传输的安全性，应当使用基于TLS协议的HTTPS。
 
 \subsubsection{WebSocket}
 
@@ -576,14 +541,6 @@ TLS是为了解决这三大风险而设计的，其设计目标是：
     \item 配备身份证书，防止身份被冒充。
 \end{enumerate}
 
-1994年，NetScape公司设计了SSL（Secure Sockets Layer）协议的1.0版，
-但是未发布。次年，NetScape公司发布SSL2.0，但很快发现有严重漏洞。
-1996年，SSL3.0版问世，得到大规模应用。
-
-直到1999年，互联网协会ISOC接替NetScape公司发布了SSL的升级版TLS1.0。
-2006年和2008年，TLS进行了两次升级，分别为TLS1.1版和TLS1.2。
-最新的变动是2018年发布的TLS1.3标准提案。
-
 TLS是介于TCP协议和上层应用协议之间的安全层，其作用机理是基于TCP连接建立安全的TLS连接，
 再基于TLS连接实现上层协议。
 其建立安全连接的基本思路是采用公钥加密法；也就是说，客户端先向服务器端索要公钥，
@@ -605,28 +562,40 @@ TLS是介于TCP协议和上层应用协议之间的安全层，其作用机理�
 \subsection{编程语言}
 \label{sec:programming-language}
 
+确定渲染引擎和网络传输协议后，需要选择编程语言以编写软件。
+合适的编程语言能同时提升软件开发效率和运行效率。
+
 \subsubsection{Rust}
 Rust编程语言\cite{rust}是一门C或C++编程语言的替代语言，它速度与C语言接近且内存利用率极高。
-它丰富的类型系统和所有权模型保证了内存安全和线程安全，让开发者在编译期就能够消除各种错误。
+它丰富的类型系统和所有权模型保证了内存安全和线程安全，让开发者在编译期就能够消除内存错误。
 另外，它拥有出色的文档、友好的编译器和清晰的错误提示信息，还集成了一流的工具——包管理器和构建工具，
 智能地自动补全和类型检验的多编辑器支持，以及自动格式化代码等等。
 
+本文的服务器端程序需要完全承担重建的任务，并需要同时服务多客户端。
+为了保证软件的实时性，程序需要高性能和高并发，故适合使用Rust编写。
+
+而数据上推流客户端可能计算性能和资源都较为有限，可能为ARM平台甚至微机，需要较底层的编程语言，
+这方面Rust也同样适用。
+
 \subsubsection{TypeScript}
+渲染客户端是基于浏览器的，本文必须选择基于JavaScript的编程语言。
+
 TypeScript编程语言\cite{typescript}是一门在JavaScript上构建的静态类型语言。
 类型提供了一种描述对象形状的方法，提供了更好的文档，并允许编译器验证代码是否正常工作。
 在TypeScript中，标注类型可以是可选的，
 因为编译器强大的类型推断能力可使开发者无需大量标注即可享受代码补全、静态检查等高级的开发功能和更舒适的开发体验。
 
 \subsection{本章小结}
-本章主要讨论可视化软件构架所需的关键技术。
+本章主要介绍可视化软件构架所需的关键技术。
 其中改良的重建算法能准确而快速地根据连续化数据重建出曲线的空间各点坐标；
 HTTPS和WebSocket可以将服务端重建的坐标数据安全又实时地传输到客户端渲染程序；
-而OpenGL和Threejs可以根据曲线各点坐标，跨平台渲染地渲染出三维图形。
+OpenGL和Threejs可以根据曲线各点坐标，跨平台渲染地渲染出三维图形；
+Rust和TypeScript可以轻松地构建出高性能又易于维护的程序。
 
-然而，这些软件技术的应用需要以代码为载体。具体软件的构建细节将在
-\ref{sec:server}\nameref{sec:server}和\ref{sec:client}\nameref{sec:client}
-两章中介绍。
+然而，这些软件技术需要以实际程序为载体。具体软件的构建细节将在
+第\ref{sec:server}章\nameref{sec:server}和第\ref{sec:client}章\nameref{sec:client}中介绍。
 
+\clearpage
 
 \section{服务器端程序实现}
 \label{sec:server}

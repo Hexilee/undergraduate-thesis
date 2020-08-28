@@ -13,7 +13,7 @@ FOSS可以由三芯光纤布拉格光栅（Fiber Bragg Grating, FBG）传感器�
 仅是OpenGL\cite{opengl}技术本身就有JavaScript绑定的WebGL\cite{webgl}；
 C绑定的WGL、GLX和CGL；iOS提供的C绑定和Android提供的Java和C绑定等。
 
-本章主要讨论\nameref{sec:ss}和\nameref{sec:render-choise}，并提出一种三维可视化软件的架构。
+本章主要讨论\nameref{sec:ss}，并提出一种三维可视化软件的架构。
 
 \subsection{形变传感器的研究方向及进展}
 \label{sec:ss}
@@ -233,28 +233,6 @@ FOSS在测量范围（长光纤）、精度、维度（弯曲、扭曲和力）�
 \end{table}
 \FloatBarrier
 
-\subsection{渲染技术选择}
-\label{sec:render-choise}
-常用的渲染接口有OpenGL(Open Graphics Library)\cite{opengl}、DirectX(Direct eXtension)\cite{directx}
-和Metal\cite{metal}。
-
-OpenGL是一种用于渲染2D或3D图像的跨平台编程接口\cite{opengl}，它并不指任何一种特定实现，而是一种接口规范。
-DirectX接口仅用于Windows平台，而Metal仅用于Apple平台（macOS、iOS）。为了软件的通用性，本文选择OpenGL作为渲染接口。
-
-OpenGL接口有多个平台的实现，这些平台主要分为原生平台（Native Platform）和浏览器平台（Browser Platform），其中
-浏览器平台也称为Web平台。原生平台的软件通常存储在硬盘中并运行在特定操作系统上，
-如C绑定的WGL、GLX和CGL；iOS提供的C绑定和Android提供的Java和C绑定等。而Web平台的软件存储在服务器或浏览器缓存中，运行在浏览器上，
-它就是JavaScript绑定的WebGL。
-
-Web渲染平台相对于原生渲染平台有以下优势：
-\begin{itemize}
-\item 无需安装，访问网址即可运行；
-\item 跨平台，操作系统无关，可以在任何大多数浏览器上运行；
-\item 易于控制软件版本（热更新、回滚等）；
-\end{itemize}
-
-同样为了软件的通用性，本文选择WebGL为渲染引擎。
-
 \FloatBarrier
 \subsection{软件架构}
 
@@ -351,8 +329,7 @@ $ks$数组内的每个元素都是一个二元组，两个数据分别代表$a$�
 
 其中通用性指客户端是否通用，包括原始数据上推客户端和渲染客户端。原始数据上推客户端的通用性就是上推数据接口的通用性，
 即形变传感器的感测数据是否普遍能满足软件的原始数据接口。根据\nameref{sec:ss}，原始数据上推客户端的通用性优良。
-而渲染客户端的通用性指客户端软件的运行是跨平台的、使用简便的。根据\ref{sec:render-choise}小节，
-基于WebGL的渲染客户端通用性极佳。
+而渲染客户端的通用性指客户端软件的运行是跨平台的、使用简便的，这需要渲染引擎的保证。
 
 安全性指各模块间数据传输是否安全，是否有被冒充、篡改或窃听的风险，需要数据传输协议的保证。
 
