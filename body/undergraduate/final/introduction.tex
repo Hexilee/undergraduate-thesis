@@ -233,16 +233,19 @@ FOSS在测量范围（长光纤）、精度、维度（弯曲、扭曲和力）�
 \end{table}
 \FloatBarrier
 
-\FloatBarrier
 \subsection{软件架构}
 
 本文提出的可视化软件架构如图 ~\ref{fig:software}。
 其工作流程可分为原始数据上推、数据预处理（连续化）、曲线坐标重建、重建数据下推和图形渲染五个步骤，
 涉及的主要数据接口有原始数据、连续化数据和重建数据。
 
-\begin{figure}
+工作流程的细节将在第\ref{sec:server}章\nameref{sec:server}和第\ref{sec:client}章\nameref{sec:client}中介绍，
+本节主要介绍三个数据接口。
+
+\FloatBarrier
+\begin{figure}[H]
 \centering
-\includegraphics[scale=0.3]{software-structure.png}
+\includegraphics[scale=0.28]{software-structure.png}
 \caption{三维可视化软件架构}
 \label{fig:software} 
 \end{figure}

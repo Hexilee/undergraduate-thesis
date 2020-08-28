@@ -3,14 +3,10 @@
 \section{软件构建关键技术}
 \label{sec:skills}
 
-本章将在\ref{sec:reconst}\nameref{sec:reconst}中分别讨论基于Cartesian坐标系和Frenet标架的两种重建算法，
+本章主要讨论基于Cartesian坐标系和Frenet标架的两种重建算法，
 并提出一种改良算法，兼具重建精度高和运行速度快的优点。
 
-另外，本章将在\ref{sec:render}\nameref{sec:render}中具体介绍OpenGL和Threejs，以使用它们构建运行在浏览器上的渲染程序。
-
-之后，在\ref{sec:net}\nameref{sec:net}中将介绍HTTPS和WebSocket，这两种协议结合使用可以保证客户端和服务器之间的数据传输是实时且安全的。
-
-最后，\ref{sec:programming-language}\nameref{sec:programming-language}中将简要介绍两种现代化的编程语言：Rust和TypeScript。
+另外，本章将讨论渲染引擎、网络传输技术和编程语言的选择。
 
 \subsection{曲线重建算法}
 \label{sec:reconst}
@@ -462,16 +458,14 @@ WebGL相对于原生渲染引擎有两大优势：
 \item 易于控制软件版本（热更新、回滚等）；
 \end{itemize} 
 
-目前支持WebGL的浏览器有：Firefox 4+、Google Chrome 9+、Opera 12+、Safari 5.1+和Internet Explorer 11+；
-但是WebGL一些特性也需要用户的硬件设备支持。
-
-WebGL几乎是完全地“跨平台”，使用任何支持WebGL的浏览器打开网页即可完成客户端渲染，而无需下载另外的软件或浏览器插件。
+目前支持WebGL的浏览器有：Firefox 4+、Google Chrome 9+、Opera 12+、Safari 5.1+和Internet Explorer 11+
+，这些浏览器打开网页即可完成客户端渲染，而无需下载另外的软件或浏览器插件。
 同样为了渲染客户端的通用性，本文选择WebGL作为渲染引擎。
 
 Threejs是一个基于WebGL的三维图形库\cite{threejs}，它封装了很多实用的图形组件，便于程序构建。
 
 
-\subsection{网络数据传输技术}
+\subsection{网络数据传输技术选择}
 \label{sec:net}
 
 既然本文选择了WebGL作为渲染引擎，网络数据传输就必须基于超文本传输协议。
@@ -491,49 +485,22 @@ HTTP协议目前有1.0，1.1和2.0三个版本，前两个版本是包结构兼�
 随后再升级到HTTP/2甚至是WebSocket\cite{rfc6455}。
 
 为了保证软件数据传输的实时性，所使用的传输协议必须支持双向流，以实现原始数据上推客户端到服务器的上推流和服务器到渲染客户端的下推流。
-而HTTP/1.x是不支持双向流的，可选的升级方案有WebSocke和HTTP/2。
-
-另外，基于TCP的HTTP协议是不安全的，为了保证软件数据传输的安全性，应当使用基于TLS协议的HTTPS。
-
-\subsubsection{WebSocket}
+而HTTP/1.x是不支持双向流的，可选的升级方案有WebSocke和gRPC。
 
 WebSocket（简称WS）是浏览器提供的一种浏览器与服务器进行全双工通讯的网络技术，
-它是一个独立的协议，但支持使用HTTP/1.x握手。
+它是一个独立的协议，但支持使用HTTP/1.x握手。gRPC协议\cite{grpc}是一种由Google制定的远程过程调用（Remote Procedure Call, RPC）协议，
+其基于HTTP/2.0和Protocol Buffers\cite{protocol-buffers}。
 
-相比于HTTP/1.x，它有如下优点：
+gRPC性能比WS高，但其Web版本并未得到广泛支持，故本文选择WS作为数据推流协议。
 
-\begin{itemize}
-    \item 支持双向通信，实时性更强；
-    \item 更好的二进制支持；
-    \item 较少的控制开销。连接创建后，WS客户端、服务端进行数据交换时，协议控制的数据包头部较小。在不包含头部的情况下，服务端到客户端的包头只有2~10字节（取决于数据包长度），客户端到服务端的的话，需要加上额外的4字节的掩码。而HTTP/1.x每次通信都需要携带完整的头部；
-    \item 支持扩展。WS协议定义了扩展，用户可以扩展协议，或者实现自定义的子协议（比如支持自定义压缩算法等）。
-\end{itemize}
-
-\subsubsection{gRPC}
-
-gRPC协议\cite{grpc}是一种由Google制定的远程过程调用（Remote Procedure Call, RPC）协议，
-其基于HTTP/2.0和Protocol Buffers\cite{protocol-buffers}，故获得了以下特性：
-
-\begin{itemize}
-    \item 支持客户端双向流（由客户端发起）和服务器端流（由服务器发起）；
-    \item 高效的传输和解析性能（二进制协议，帧数据）；
-    \item 高连接利用率（HTTP/2通过数据帧支持了连接的多路复用）；
-    \item 支持流控；
-    \item 高效且稳健（支持向后兼任）的序列化、反序列化（由Protocol Buffers提供）；
-    \item 支持各种主流编程语言（Google提供一个grpc-core C库供原生语言绑定；同时提供grpc-web供浏览器使用）。
-\end{itemize}
-
-\subsubsection{TLS}
-
-TCP是明文传输且无验证机制的，其存在三大风险：
-
+另外，基于TCP的HTTP协议是明文传输且无验证机制的，其存在三大风险：
 \begin{enumerate}
     \item 窃听风险（eavesdropping）：第三方可以获知通信内容；
     \item 篡改风险（tampering）：第三方可以修改通信内容；
     \item 冒充风险（pretending）：第三方可以冒充他人身份参与通信（中间人攻击）。
 \end{enumerate}
 
-TLS是为了解决这三大风险而设计的，其设计目标是：
+而TLS是为了解决这三大风险而设计的，其设计目标是：
 
 \begin{enumerate}
     \item 所有信息都是加密传播，第三方无法窃听；
@@ -556,10 +523,11 @@ TLS是介于TCP协议和上层应用协议之间的安全层，其作用机理�
 
 其中证书由各权威组织发行，用于保证公钥没有被篡改，故可杜绝中间人攻击。
 基于公私钥的非对称加密计算量很大，故只用于加密传递“对话密钥”，之后通过“对话密钥”对信息进行快速对称加密。
-
 基于TLS的应用层协议都会在原本的协议名后加一个 “S”，如HTTPS、FTPS等，表示此连接是安全的。
 
-\subsection{编程语言}
+为了保证软件的安全性，本文选择基于HTTPS的WSS。
+
+\subsection{编程语言选择}
 \label{sec:programming-language}
 
 确定渲染引擎和网络传输协议后，需要选择编程语言以编写软件。
@@ -578,12 +546,12 @@ Rust编程语言\cite{rust}是一门C或C++编程语言的替代语言，它速�
 这方面Rust也同样适用。
 
 \subsubsection{TypeScript}
-渲染客户端是基于浏览器的，本文必须选择基于JavaScript的编程语言。
+渲染客户端是基于浏览器的，故开发语言必须选择基于JavaScript的编程语言。
 
 TypeScript编程语言\cite{typescript}是一门在JavaScript上构建的静态类型语言。
 类型提供了一种描述对象形状的方法，提供了更好的文档，并允许编译器验证代码是否正常工作。
 在TypeScript中，标注类型可以是可选的，
-因为编译器强大的类型推断能力可使开发者无需大量标注即可享受代码补全、静态检查等高级的开发功能和更舒适的开发体验。
+编译器强大的类型推断能力可使开发者无需大量标注即可享受代码补全、静态检查等高级的开发功能和更舒适的开发体验。
 
 \subsection{本章小结}
 本章主要介绍可视化软件构架所需的关键技术。
