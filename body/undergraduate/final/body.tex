@@ -138,125 +138,119 @@ B样条曲线插值法和三次样条曲线插值法。
 \end{enumerate}
 
 \subsubsection{常用拟合算法}
+\FloatBarrier
+常用的拟合算法有基于Cartesian坐标系的拟合算法和基于Frenet标架的拟合算法。
+基于Cartesian坐标系的拟合算法原理如图\ref{fig:cartesian}。
 
-常用的拟合算法有曲率方向作为运动坐标系坐标轴的拟合算法和基于Frenet标架的拟合算法。
+\begin{figure}[b!]
+\centering
+\includegraphics[scale=0.5]{cartesian-coordinate-system.jpg}
+\caption{基于Cartesian坐标系的拟合算法\cite{用于光纤光栅曲线重建算法的坐标点拟合}}
+\label{fig:cartesian}
+\end{figure}
 
-\begin{enumerate}[label=(\Alph*)]
-    \item \textbf{曲率方向作为运动坐标系坐标轴的拟合算法} \\
-    \FloatBarrier
-    \begin{figure}
-    \centering
-    \includegraphics[scale=0.4]{cartesian-coordinate-system.jpg}
-    \caption{曲率方向作为运动坐标系坐标轴\cite{用于光纤光栅曲线重建算法的坐标点拟合}}
-    \end{figure}
-    \FloatBarrier
+此算法的原理是以每个微段的方向为z轴建立运动坐标系$o_i-a_ib_ic_i$，
+并通过几何方法求得下一个点在此坐标系下的相对坐标\cite{3d-shape-display}$o_{i+1} \{d_{ai}, d_{bi}, d_{ci}\}$，
+再通过线性变换得到下一个点的运动坐标系\cite{three-dimensional-curve}$o_{i+1}-a_{i+1}b_{i+1} c_{i+1}$。
+就可以求得每个点在上个运动坐标系下的相对坐标以及当前坐标系相对上个坐标系的变换矩阵$t_{i, i+1}$。
 
-    此算法的原理是以每个微段的方向为z轴建立运动坐标系$o_i-a_ib_ic_i$，
-    并通过几何方法求得下一个点在此坐标系下的相对坐标\cite{3d-shape-display}$o_{i+1} \{d_{ai}, d_{bi}, d_{ci}\}$，
-    再通过线性变换得到下一个点的运动坐标系\cite{three-dimensional-curve}$o_{i+1}-a_{i+1}b_{i+1} c_{i+1}$。
-    这样就可以求得每个点在上个运动坐标系下的相对坐标以及当前坐标系相对上个坐标系的变换矩阵$t_{i, i+1}$。
+\FloatBarrier
 
-    \begin{align}
-        k_i &= \sqrt{k_{ai} ^ 2 + k_{bi} ^ 2}, \\
-        \theta_i &= k_i \cdot d_s, \\
-        cos\alpha_i &= k_{ai} / k_i, \\
-        sin\alpha_i &= k_{bi} / k_i, \\
-        d_a &= \frac{cos\alpha_i \cdot (1 - cos\theta_i)}{k_i} \cdot d_s, \\
-        d_b &= \frac{sin\alpha_i \cdot (1 - cos\theta_i)}{k_i} \cdot d_s, \\
-        d_c &= \frac{sin\theta_i}{k_i} \cdot d_s, \\
-        t_{i, i+1} &= \left[
-            \begin{matrix}
-                cos \alpha_i & -sin \alpha_i & 0 \\
-                sin \alpha_i & cos \alpha_i & 0 \\
-                0 & 0 & 1
-            \end{matrix}
-            \right]
-            \cdot
-            \left[
-            \begin{matrix}
-                cos \theta_i & 0 & sin \theta_i \\
-                0 & 1 & 0 \\
-                -sin \theta_i & 0 & cos \theta_i \\
-            \end{matrix}
-            \right]
-            \cdot
-            \left[
-            \begin{matrix}
-                cos \alpha_i & sin \alpha_i & 0 \\
-                -sin \alpha_i & cos \alpha_i & 0 \\
-                0 & 0 & 1
-            \end{matrix}
-            \right] \label{alg:reconstruction}
-    \end{align}
-
-    当前坐标系点乘三个矩阵的几何意义分别为：\\
-    \begin{enumerate}
-        \item 绕$\vec c_i$旋转一个$\alpha_i$角使得$\vec a_i$与$\vec k_i$同向；
-        \item 绕$\vec b_i$旋转一个$\theta_i$角得到$\vec c_{i+1}$；
-        \item 绕$\vec c_{i+1}$旋转一个$-\alpha_i$角得到$\vec a_{i+1}$和$\vec b_{i+1}$。
-    \end{enumerate}
-
-    将变换矩阵累乘即可得到各运动坐标系相对绝对（原点）坐标系的变换矩阵 $T_i$。
-    然后将相对坐标$o_{i+1} \{d_{ai}, d_{bi}, d_{ci}\}$乘以$T_i$的逆矩阵即可得绝对坐标。
-
-    \item \textbf{基于Frenet标架的拟合算法} \\
-    我们也可以使用微分几何中常用的Frenet坐标标架\cite{用于光纤光栅曲线重建算法的坐标点拟合}。令$\vec T$为切向量，$\vec N$为主法向量，指向微段方向；$\vec B$为副法向量，
-    则有：$\vec B = \vec T \times \vec N$。
-
-    假设第$i$段曲线在$xoz$平面内，则两端点平移量$p_{i+1}$有：
-    \begin{equation}
-        p_{i+1} = [-(1-cos \ \theta_i)/k_i \quad 0 \quad sin \ \theta_i/k_i]^T
-    \end{equation}
-    曲率$k_i$、弧长$d_s$和弧角$\theta_i$满足$\theta_i = d_s \cdot k_i$。坐标系平移后沿$B_i$轴旋转$\theta_i$，则有：
-    \begin{equation}
-    [T_{B_i} ^ {\theta_i}] = \left[
+\begin{align}
+    k_i &= \sqrt{k_{ai} ^ 2 + k_{bi} ^ 2}, \\
+    \theta_i &= k_i \cdot d_s, \\
+    cos\alpha_i &= k_{ai} / k_i, \\
+    sin\alpha_i &= k_{bi} / k_i, \\
+    d_a &= \frac{cos\alpha_i \cdot (1 - cos\theta_i)}{k_i} \cdot d_s, \\
+    d_b &= \frac{sin\alpha_i \cdot (1 - cos\theta_i)}{k_i} \cdot d_s, \\
+    d_c &= \frac{sin\theta_i}{k_i} \cdot d_s, \\
+    t_{i, i+1} &= \left[
         \begin{matrix}
-        cos \theta_i & 0 & -sin \theta_i & 0 \\
-        0 &1 & 0 & 0 \\
-        sin \theta_i & 0 & cos \theta_i & 0 \\
-        0 & 0 & 0 & 1 \\
+            cos \alpha_i & -sin \alpha_i & 0 \\
+            sin \alpha_i & cos \alpha_i & 0 \\
+            0 & 0 & 1
         \end{matrix}
-    \right]
-    \end{equation}
-    接着将坐标系沿$T_i$旋转$\Delta \phi_{i+1}$，其值由下式求出：
-    \begin{equation}
-    \Delta \phi_{i+1} = \begin{cases}
-        \phi_{i+1} - \phi_i,&(\phi_{i+1} \ge \phi_i) \\
-        2\pi + \phi_{i+1} - \phi_i,&(\phi_{i+1} \textless \phi_i)\\
-    \end{cases}
-    \end{equation}
-    则有：
-    \begin{equation}
-    [T_{T_i} ^ {\Delta\phi_{i+1}}] = \left[
+        \right]
+        \cdot
+        \left[
         \begin{matrix}
-        cos \Delta\phi_{i+1} & -sin \Delta\phi_{i+1} & 0 & 0 \\
-        sin \Delta\phi_{i+1} & cos \Delta\phi_{i+1} & 0 & 0 \\
-        0 & 0 & 1 & 0 \\
-        0 & 0 & 0 & 1 \\
+            cos \theta_i & 0 & sin \theta_i \\
+            0 & 1 & 0 \\
+            -sin \theta_i & 0 & cos \theta_i \\
         \end{matrix}
-    \right]
-    \end{equation}
-    由此可求得一个微段运动坐标系的变换矩阵：
-    \begin{equation}
-    [t_{i+1}] = \left[
+        \right]
+        \cdot
+        \left[
         \begin{matrix}
-        & [T_{i+1}] & & p_{i+1} \\
-        0 & 0 & 0 & 1 \\
+            cos \alpha_i & sin \alpha_i & 0 \\
+            -sin \alpha_i & cos \alpha_i & 0 \\
+            0 & 0 & 1
         \end{matrix}
-    \right]
-    \end{equation}
-    其中$[T_{i+1}] = [T_{B_i} ^ {\theta_i}] \cdot [T_{T_i} ^ {\Delta\phi_{i+1}}]$。
+        \right] \label{alg:reconstruction}
+\end{align}
 
-    通过此变换矩阵即可求得每个点的运动坐标系和下个点的相对坐标，再通过变换矩阵的逆矩阵求得绝对坐标\cite{FBG-sensor-devices}，最终拟合出曲线。
+当前坐标系点乘三个矩阵的几何意义分别为：\\
+\begin{enumerate}
+    \item 绕$\vec c_i$旋转一个$\alpha_i$角使得$\vec a_i$与$\vec k_i$同向；
+    \item 绕$\vec b_i$旋转一个$\theta_i$角得到$\vec c_{i+1}$；
+    \item 绕$\vec c_{i+1}$旋转一个$-\alpha_i$角得到$\vec a_{i+1}$和$\vec b_{i+1}$。
 \end{enumerate}
+
+将变换矩阵累乘即可得到各运动坐标系相对绝对（原点）坐标系的变换矩阵 $T_i$。
+然后将相对坐标$o_{i+1} \{d_{ai}, d_{bi}, d_{ci}\}$乘以$T_i$的逆矩阵即可得绝对坐标。
+
+我们也可以使用微分几何中常用的Frenet坐标标架\cite{用于光纤光栅曲线重建算法的坐标点拟合}。令$\vec T$为切向量，$\vec N$为主法向量，指向微段方向；$\vec B$为副法向量，
+则有：$\vec B = \vec T \times \vec N$。
+
+假设第$i$段曲线在$xoz$平面内，则两端点平移量$p_{i+1}$有：
+\begin{equation}
+    p_{i+1} = [-(1-cos \ \theta_i)/k_i \quad 0 \quad sin \ \theta_i/k_i]^T
+\end{equation}
+曲率$k_i$、弧长$d_s$和弧角$\theta_i$满足$\theta_i = d_s \cdot k_i$。坐标系平移后沿$B_i$轴旋转$\theta_i$，则有：
+\begin{equation}
+[T_{B_i} ^ {\theta_i}] = \left[
+    \begin{matrix}
+    cos \theta_i & 0 & -sin \theta_i & 0 \\
+    0 &1 & 0 & 0 \\
+    sin \theta_i & 0 & cos \theta_i & 0 \\
+    0 & 0 & 0 & 1 \\
+    \end{matrix}
+\right]
+\end{equation}
+接着将坐标系沿$T_i$旋转$\Delta \phi_{i+1}$，其值由下式求出：
+\begin{equation}
+\Delta \phi_{i+1} = \begin{cases}
+    \phi_{i+1} - \phi_i,&(\phi_{i+1} \ge \phi_i) \\
+    2\pi + \phi_{i+1} - \phi_i,&(\phi_{i+1} \textless \phi_i)\\
+\end{cases}
+\end{equation}
+则有：
+\begin{equation}
+[T_{T_i} ^ {\Delta\phi_{i+1}}] = \left[
+    \begin{matrix}
+    cos \Delta\phi_{i+1} & -sin \Delta\phi_{i+1} & 0 & 0 \\
+    sin \Delta\phi_{i+1} & cos \Delta\phi_{i+1} & 0 & 0 \\
+    0 & 0 & 1 & 0 \\
+    0 & 0 & 0 & 1 \\
+    \end{matrix}
+\right]
+\end{equation}
+由此可求得一个微段运动坐标系的变换矩阵：
+\begin{equation}
+[t_{i+1}] = \left[
+    \begin{matrix}
+    & [T_{i+1}] & & p_{i+1} \\
+    0 & 0 & 0 & 1 \\
+    \end{matrix}
+\right]
+\end{equation}
+其中$[T_{i+1}] = [T_{B_i} ^ {\theta_i}] \cdot [T_{T_i} ^ {\Delta\phi_{i+1}}]$。
+
+通过此变换矩阵即可求得每个点的运动坐标系和下个点的相对坐标，再通过变换矩阵的逆矩阵求得绝对坐标\cite{FBG-sensor-devices}，最终拟合出曲线。
 
 \subsubsection{改良拟合算法}
 
 在介绍改良算法之前，先简要介绍Cartesian坐标系二维情况下的曲线重建算法。
-
-\begin{itemize}
-
-\item \textbf{二维曲线} \\
 
 \FloatBarrier
 \begin{figure}
@@ -319,22 +313,20 @@ $o_i$在绝对坐标系中的坐标 $T_i$满足：
     
 至此，我们通过二维曲线上各微段弧长和曲率拟合出了各端点的绝对坐标。
 
-\item \textbf{三维曲线} \\
+三维情况下的算法原理如图 ~\ref{fig:coordinate-reconst} 所示，在三维情况下，我们以曲线的每个$ds$微段的端点$o_i$为原点建立运动坐标系\cite{three-dimensional-curve} $o_i-a_ib_ic_i$，
+其中$\vec{c_i}$是曲线在$o_i$点的切向量，$\vec{a_i}$是法向量，$\vec{b_i}$是副法向量，则有：
+\begin{equation}
+\vec{b_i} = \vec{a_i} \times \vec{c_i}
+\end{equation}
 
 \FloatBarrier
-\begin{figure}
+\begin{figure}[!hbtp]
 \centering
 \includegraphics[scale=0.3]{coordinate-reconst.png}
 \caption{基于Cartesian坐标系的三维曲线重建原理}
 \label{fig:coordinate-reconst} 
 \end{figure}
 \FloatBarrier
-
-如图 ~\ref{fig:coordinate-reconst} 所示，在三维情况下，我们以曲线的每个$ds$微段的端点$o_i$为原点建立运动坐标系\cite{three-dimensional-curve} $o_i-a_ib_ic_i$，
-其中$\vec{c_i}$是曲线在$o_i$点的切向量，$\vec{a_i}$是法向量，$\vec{b_i}$是副法向量，则有：
-\begin{equation}
-\vec{b_i} = \vec{a_i} \times \vec{c_i}
-\end{equation}
 
 这一点区别于传统的基于Cartesian坐标系的三维曲线重建，运动坐标系不再使用$o_i-x_iy_iz_i$。
 这样每次迭代能省去一次矩阵运算，并且可以分别迭代分离旋转矩阵和平移拉伸矩阵。
@@ -426,8 +418,6 @@ T_i = \left[
   \right]
   + \Sigma_{k=1} ^ {i} \vec{t_i}
 \end{equation}
-
-\end{itemize}
 
 \subsection{渲染引擎选择}
 \label{sec:render}
