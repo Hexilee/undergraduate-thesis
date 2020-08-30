@@ -40,6 +40,11 @@ B样条曲线插值法和三次样条曲线插值法。
     \right.
     \end{equation}
 
+    其中$S$为自变量，表示距离原点的曲线弧长，$S_i$为第$i$个测量距原点的弧长；
+    $k_i$表示第$i$个测量点的曲率；
+    $a_{i, i+1}$表示第$i$个测量点到第$i+1$个测量点连线的斜率；
+    $k_{i, i+1}$表示第$i$个测量点到第$i+1$个测量点连线的曲率函数。
+    
     线性插值算法简单，计算速度快；但是分割点连接处不平滑，跟实际产生的曲线可能存在一定的差距。
 
     \item \textbf{贝塞尔曲线插值法} \\
@@ -326,7 +331,6 @@ $o_i$在绝对坐标系中的坐标 $T_i$满足：
 \caption{基于Cartesian坐标系的三维曲线重建原理}
 \label{fig:coordinate-reconst} 
 \end{figure}
-\FloatBarrier
 
 这一点区别于传统的基于Cartesian坐标系的三维曲线重建，运动坐标系不再使用$o_i-x_iy_iz_i$。
 这样每次迭代能省去一次矩阵运算，并且可以分别迭代分离旋转矩阵和平移拉伸矩阵。
@@ -346,7 +350,6 @@ $o_i$在绝对坐标系中的坐标 $T_i$满足：
 \caption{运动坐标系旋转俯视图}
 \label{fig:iterate-phi} 
 \end{figure}
-\FloatBarrier
 
 又由于$x$的方向恒定（不发生扭转的情况下），故有：
 
@@ -418,6 +421,7 @@ T_i = \left[
   \right]
   + \Sigma_{k=1} ^ {i} \vec{t_i}
 \end{equation}
+\FloatBarrier
 
 \subsection{渲染引擎选择}
 \label{sec:render}
@@ -532,7 +536,7 @@ Rust编程语言\cite{rust}是一门C或C++编程语言的替代语言，它速�
 本文的服务器端程序需要完全承担重建的任务，并需要同时服务多客户端。
 为了保证软件的实时性，程序需要高性能和高并发，故适合使用Rust编写。
 
-而数据上推流客户端可能计算性能和资源都较为有限，可能为ARM平台甚至微机，需要较底层的编程语言，
+而数据上推流客户端可能计算性能和资源都较为有限，可能为ARM等嵌入式平台，需要较底层的编程语言，
 这方面Rust也同样适用。
 
 \subsubsection{TypeScript}
@@ -550,7 +554,7 @@ HTTPS和WebSocket可以将服务端重建的坐标数据安全又实时地传输
 OpenGL和Threejs可以根据曲线各点坐标，跨平台渲染地渲染出三维图形；
 Rust和TypeScript可以轻松地构建出高性能又易于维护的程序。
 
-然而，这些软件技术需要以实际程序为载体。具体软件的构建细节将在
+然而，这些软件技术的应用需要以实际程序为载体。具体软件的构建细节将在
 第\ref{sec:server}章\nameref{sec:server}和第\ref{sec:client}章\nameref{sec:client}中介绍。
 
 \clearpage
@@ -561,7 +565,7 @@ Rust和TypeScript可以轻松地构建出高性能又易于维护的程序。
 并在最后分析算法实现的重建效果与误差。
  
 \subsection{数据上推流注册模块}
-这个模块需要接收客户端上推的原始数据。所使用的协议为WebSocket on HTTPS。
+这个模块需要接收客户端上推的原始数据。所使用的协议为WSS。
 本文选用的Web Server是hyper\cite{hyper}，并基于它实现了一个简单的Web框架roa\cite{roa}。
 
 hyper是一个专注正确性和高性能的http库，但过于底层，使用不便。
