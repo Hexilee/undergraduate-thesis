@@ -1,5 +1,5 @@
-\ifthenelse{\equal{\Degree}{graduate} \AND \equal{\GradLevel}{master}}
-{
+% \ifthenelse{\equal{\Degree}{undergraduate} \AND \equal{\GradLevel}{master}}
+% {
     \geometry{
         a4paper,
         marginpar=0pt,
@@ -30,10 +30,12 @@
     \renewcommand{\cfttoctitlefont} {\hfill\zihao{-2}\heiti}\renewcommand{\cftaftertoctitle}{\hfill}
     \renewcommand{\cftloftitlefont} {\hfill\zihao{-2}\heiti}\renewcommand{\cftafterloftitle}{\hfill}
     \renewcommand{\cftlottitlefont} {\hfill\zihao{-2}\heiti}\renewcommand{\cftafterlottitle}{\hfill}
-    \renewcommand{\cftchapfont}     {\bf \zihao{-4}\heiti}
+    \renewcommand{\cftchapfont}     {\zihao{-4}\heiti}
+    \renewcommand{\cftsecfont}      {\zihao{-4}\heiti}
+    \setlength{\cftpartindent}      {0em}
     \setlength{\cftchapindent}      {0em}
     \setlength{\cftsecindent}       {0em}
     \setlength{\cftsubsecindent}    {1em}
     \setlength{\cftsubsubsecindent} {2em}
-}
-{}
+% }
+% {}
