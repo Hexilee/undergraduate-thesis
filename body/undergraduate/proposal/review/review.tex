@@ -30,95 +30,46 @@
 
 \subsubsection{接触式传统形变传感器}
 
-接触式CSS主要分为电阻压力传感器、光电传感器和微机电系统（Micro-Electo-Mechanical System, MEMS）传感器。
-它们各自的简介、优缺点和应用如下表\cite{recent-dev-in-foss}：
+接触式CSS主要分为电阻压力传感器、电光传感器和微机电系统（Micro-Electo-Mechanical System, MEMS）传感器。
 
-\begin{table}[!htbp]\small
+电阻压力传感器基于压敏电阻；
+电光传感器基于陀螺仪、加速度计等电子传感器和光传感器组成的传感网络；
+MEMS传感器基于微机电系统。它们各自的优缺点和应用场景对比如表~\ref{table:css}所示。
+
+\begin{table}[h]\footnotesize
+\caption{三种接触式CSS对比}
+\label{table:css}
 \begin{center}
-\begin{tabular}{p{0.20\textwidth}p{0.20\textwidth}p{0.30\textwidth}p{0.30\textwidth}}
+\begin{tabular}{p{0.16\textwidth}p{0.16\textwidth}p{0.24\textwidth}p{0.24\textwidth}}
 \toprule
-\textbf{传感器技术} & \textbf{简介} & \makebox[5cm][c]{\textbf{优点与应用}} & \makebox[5cm][c]{\textbf{缺点}}\\
+\textbf{传感器类别} & \textbf{优点} &\textbf{缺点} & \textbf{应用场景}\\
 
 \midrule
 
-电阻压力传感器 & 用于短距离二维弯曲或关节运动测量。&
-\begin{itemize}
-\setlength{\itemsep}{0pt}
-\setlength{\parsep}{0pt}
-\setlength{\parskip}{0pt}
-    \item 低成本；
-    \item 与其它电器件相兼容；
-    \item 非常适用于可穿戴电子产品。
-\end{itemize}
-& 
-\begin{itemize}
-\setlength{\itemsep}{0pt}
-\setlength{\parsep}{0pt}
-\setlength{\parskip}{0pt}
-    \item 不够精准；
-    \item 尺寸重量过大，不适用于小尺寸的自动控制应用；
-    \item 复杂且接线繁琐，不适用于大规模应用。
-\end{itemize} \\
+电阻压力传感器 &
+低成本；与其它电器件相兼容& 
+不够精准；尺寸重量过大；复杂且接线繁琐&
+消费级电子产品，如游戏用压感器、穿戴式心率检测仪。
+\\
+\\
 
-\midrule
+电光传感器 &
+易于大规模生产；与Arduinos等价格低廉的微电子设备兼容&
+要求传感器周围有自由空间，以便光学传感器能够正常工作；无法保证精度 &
+通用基础设备，如医疗运动用人体肌肉脊椎形状传感。
+\\
+\\
 
-光电传感器 & 基于密集的传感器网络工作：一种可计算物体3D表面的算法解决方案；一种电阻率传感器网络；三轴陀螺仪、三轴加速 度计和航班时间距离传感器。&
-\begin{itemize}
-\setlength{\itemsep}{0pt}
-\setlength{\parsep}{0pt}
-\setlength{\parskip}{0pt}
-    \item 作为可穿戴设备检测脊椎姿势变化，进行医疗运动和预防伤害方面具有巨大潜力；
-    \item 易于大规模生产；
-    \item 与Arduinos等价格低廉的微电子设备兼容。
-\end{itemize}
-& 
-\begin{itemize}
-\setlength{\itemsep}{0pt}
-\setlength{\parsep}{0pt}
-\setlength{\parskip}{0pt}
-    \item 对于工业应用而言，不是可靠且准确的解决方案；
-    \item 要求传感器周围有自由空间，以便光学传感器能够正常工作；
-    \item 无法保证精度；
-    \item 不够灵活。
-\end{itemize} \\
-
-\midrule
-
-MEMS传感器 & 结合了加速度计、陀螺仪和磁力计的微电机系统。&
-\begin{itemize}
-\setlength{\itemsep}{0pt}
-\setlength{\parsep}{0pt}
-\setlength{\parskip}{0pt}
-    \item 钻井；
-    \item 地面监控；
-    \item 远程测量；
-    \item 适用于密闭空间；
-    \item 精加工。
-\end{itemize}
-& 
-\begin{itemize}
-\setlength{\itemsep}{0pt}
-\setlength{\parsep}{0pt}
-\setlength{\parskip}{0pt}
-    \item 难以定制；
-    \item 笨重；
-    \item 低柔韧性（长关节）；
-    \item 测量分辨率低；；
-    \item 昂贵；
-\end{itemize} \\
+MEMS传感器 & 
+精度高；功耗小；可靠性高& 
+难以定制；笨重；低柔韧性；昂贵&
+工业场景，如钻井、海床监控、精加工等\\
 \bottomrule
 \end{tabular}
-\caption{接触式CSS的优缺点对比}
 \end{center}
 \end{table}
 
-分析可知这三种 CSS 传感器各自的适用场景：
-
-\begin{itemize}
-    \item 电阻压力传感器适用于消费级电子产品，如游戏用压感器、心率检测仪等。
-    \item 光电传感器适用于通用基础设备，如医疗运动用人体肌肉脊椎形状传感。
-    \item MEMS传感器适用于大型工程，如钻井、海床监控等。
-\end{itemize}
+\FloatBarrier
 
 \subsubsection{光纤形变传感器}
 
