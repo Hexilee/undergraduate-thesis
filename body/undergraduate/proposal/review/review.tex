@@ -138,11 +138,14 @@ FOSS可以由三芯光纤布拉格光栅（Fiber Bragg Grating, FBG）传感器�
 \item 光纤传感器不受外部电磁场的影响。
 \end{itemize}
 
-FOS的发展趋势如下表\cite{recent-dev-in-foss}：
+FOS的发展趋势如表\ref{table:foss}：
 
-\begin{table}[!htbp]\small
+\begin{table}\footnotesize
+\caption{FOSS的发展趋势\cite{recent-dev-in-foss}}
+\label{table:foss}
 \begin{center}
-\begin{tabular}{p{0.20\textwidth}cp{0.80\textwidth}}
+\tabcolsep=0.10cm
+\begin{tabular}{p{0.16\textwidth}cp{0.64\textwidth}}
 \toprule
 \textbf{进展} & \textbf{年份} & \makebox[5cm][c]{\textbf{简介}}\\
 
@@ -150,8 +153,8 @@ FOS的发展趋势如下表\cite{recent-dev-in-foss}：
 
 弯曲传感器 & \textasciitilde 1980 & 确定了三种主要的早期弯曲感测方法。它们分别是：
 通过正常光纤传输的功率变化感测；
-通过配备了弯曲调制器的光纤传输功率变化来感测；
-通过同一包层中并行核心之间的串扰而导致的传输功率变化来感测。
+通过配备了弯曲调制器的光纤传输功率变化感测；
+通过同一包层中并行核心之间的串扰而导致的传输功率变化感测。
 \\
 \\
 定向弯曲传感器 & \textasciitilde 1990 & 通过使用多根单独的光纤和多芯光纤，可以检测光纤弯曲方向。
@@ -177,11 +180,11 @@ FOS的发展趋势如下表\cite{recent-dev-in-foss}：
 \\
 \\
 用于工业和医疗机器人的光纤形变传感 & \textasciitilde 2006 & 各种专利的出现促使着工业和医疗器械中FOSS的使用，
-这似乎是工业界第一次在实际应用中对FOSS表现出兴趣。
+这是工业界第一次在实际应用中对FOSS表现出兴趣。
 \\
 \\
-螺旋光纤布拉格光栅传感器 & \textasciitilde 2008 & 这篇论文似乎是对多芯光纤中使用螺旋FBG进行扭曲和弯曲测量的第一个演示，
-这为如何基于FOSS实现完整的3D重建提供了重大改进思路。
+螺旋光纤布拉格光栅传感器 & \textasciitilde 2008 & 多芯光纤中使用螺旋FBG进行扭曲和弯曲测量的第一个演示，
+这为如何基于FOSS实现完整的3D重建提供了改进思路。
 \\
 \\
 光纤形变传感可视化 & \textasciitilde 2009 & 随着返回信号愈发复杂，渲染出使用光纤形状感测的电缆变得更具挑战性。
@@ -202,9 +205,10 @@ FOS的发展趋势如下表\cite{recent-dev-in-foss}：
 \\
 \bottomrule
 \end{tabular}
-\caption{FOSS的发展趋势}
 \end{center}
 \end{table}
+
+\FloatBarrier
 
 \subsection{曲线重建算法}
 曲线重建主要分为两个部分，一个是连续化，即将离散的数据连续化；
@@ -635,10 +639,11 @@ TLS是介于TCP协议和上层应用协议之间的安全层，其作用机理�
 
 基于TLS的应用层协议都会在原本的协议名后加一个 “S”，如HTTPS、FTPS等，表示此连接是安全的。
 
-\section{研究展望}
+\clearpage
+\sectionnonum{研究展望}
 
 传感器领域，在实时性、准确度要求不是很高且测量环境允许的场景下，
-CSS具有成熟的产业链和颇具规模的市场，且表现不出特别的劣势。
+CSS具有成熟的产业链和颇具规模的市场，且无明显劣势。
 但在高实时性、准确性要求和恶劣环境（如电磁干扰、深水）下，FOSS表现出了压倒性的优势。
 近年来FOSS在大范围、分布式传感的研究也获得了不错的进展，未来有望传感更大范围、高精度、多维度的实时信息。
 
@@ -659,4 +664,6 @@ B样条曲线和三次样条曲率插值法则各有取舍。
 甚至基于WebGL来获得实时的图像。
 
 \newpage
-\printbibliography[title={参考文献}]
+\AtNextBibliography{\songti\zihao{5}}
+\sectionnonum{参考文献}
+\printbibliography[heading=none]
