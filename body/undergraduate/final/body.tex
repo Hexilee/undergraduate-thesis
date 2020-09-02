@@ -616,30 +616,27 @@ $curvatures$为插值后的曲率数据。
 for ka, kb in curvatures {
     k := sqrt(ka ^ 2 + kb ^ 2)
     theta := k * ds
-    cos_alpha := ka / k
-    sin_alpha := kb / k
-    cos_theta := cos(theta)
-    sin_theta := sin(theta)
-    da := cos_alpha * (1 - cos_theta) / k
-    db := sin_alpha * (1 - cos_theta) / k
-    dc := sin_theta / k
-    ti = 1 / ri * [da, db, dc]
+    alpha := cos(ka / k)
+    phi := alpha - alpha_last
+    da := (1 - cos(theta)) / k
+    db := 0
+    dc := sin(theta) / k
+
+    ri = Matrix3::new(
+        cos(phi), -sin(phi), 0,
+        sin(phi), cos(phi), 0,
+        0, 0, 1,
+    ) * ri
+
+    ti = (1 / ri) * [da, db, dc]
     ai += ti
     [x, y, z] := ai.column(0)
     points.push(Point {x, y, z})
-    // get next rotation matrix
+
     ri = Matrix3::new(
-        cos_alpha, -sin_alpha, 0.,
-        sin_alpha, cos_alpha, 0.,
-        0., 0., 1.,
-    ) * Matrix3::new(
-        cos_theta, 0., sin_theta,
-        0., 1., 0.,
-        -sin_theta, 0., cos_theta,
-    ) * Matrix3::new(
-        cos_alpha, sin_alpha, 0.,
-        -sin_alpha, cos_alpha, 0.,
-        0., 0., 1.,
+        cos(theta), 0, sin(theta),
+        0, 1, 0,
+        -sin(theta), 0, cos(theta),
     ) * ri
 }
 \end{lstlisting}
