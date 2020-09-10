@@ -740,11 +740,37 @@ for id, connection in incomming() {
 
 \FloatBarrier
 
+\subsubsection{拟合算法对比}
+第~\ref{sec:reconst}节\nameref{sec:reconst}中主要提到了两种拟合算法，一种是经典Cartesian拟合算法，
+另一种是基于Cartesian坐标系的改良算法，本小节将对比它们的实际准确度和性能。
+
+图~\ref{fig:cos-diff-method}为插值步长$0.01$时，使用不同算法的余弦曲线重建结果。
+其中图~\ref{cos-diff-method:elapsed}为重建性能对比图，使用两种算法各重建$1000$次，
+横、纵轴分别为重建时间（单位/毫秒）和对应的样本数，红色方块、蓝色圆盘分别代表经典算法和改良算法；
+图~\ref{cos-diff-method:error}展示了随横坐标$x$变化的绝对误差；
+图~\ref{cos-diff-method:relative-error}展示了随横坐标$x$变化的相对误差。
+
+可见经典算法和改良算法的重建误差完全一致，准确度没有任何差别。
+但经典算法的运行时间极不稳定，最高的重建耗时接近7毫秒；而改良算法稳定维持在2毫秒以内。
+
+\begin{figure}
+\centering
+\subfloat[重建性能]{\includegraphics{cos-diff-method-elapsed.pdf}\label{cos-diff-method:elapsed}}\\
+\subfloat[绝对误差]{\includegraphics[scale=0.5]{cos-diff-method-error.pdf}\label{cos-diff-method:error}}
+\subfloat[相对误差]{\includegraphics[scale=0.5]{cos-diff-method-relative-error.pdf}\label{cos-diff-method:relative-error}}\\
+\caption{使用不同算法的余弦曲线重建}
+\label{fig:cos-diff-method}
+\end{figure}
+\FloatBarrier
+
+\FloatBarrier
+
 \subsection{本章小结}
 本章主要介绍服务器端程序的实现细节，并分析了重建结果与误差。
 实际误差变化趋势与理论大致相符，可认为算法实现正确；
 在$0.01$的插值步长下标准余弦曲线重建的相对误差在$0.03$以内，可以认为重建准确度良好；
-另外，在比较了$0.1$、$0.01$、$0.001$三种插值步长下的重建结果后可以认为$0.01$的插值步长更适于本文软件构建。
+比较了$0.1$、$0.01$、$0.001$三种插值步长下的重建结果后可以认为$0.01$的插值步长更适于本文软件构建；
+另外，比较了经典Cartesian拟合算法和改良算法后，可认为改良算法在没有准确度损失的情况下提升了性能。
 
 \clearpage
 
