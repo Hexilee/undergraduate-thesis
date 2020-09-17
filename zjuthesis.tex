@@ -13,7 +13,7 @@
     Major           = 海洋工程与技术,
     Department      = 海洋学院,
     Title           = 形变传感器三维可视化软件开发,
-    SubmitDate      = 二零二零年九月十八日,
+    SubmitDate      = 二〇二〇年九月,
     MajorFormat     = cs,
     Degree          = undergraduate,   % 'undergraduate' or 'graduate'
     Type            = thesis,          % 'thesis'   or 'design'
@@ -46,12 +46,14 @@
         \inputpage{final/previous}
         \cleardoublepage
 
-        \bodystyle
         \inputpage{final/toc}
         \clearpage
+        \coverstyle
         \ifthenelse{\equal{\Type}{design}}
             {\part{毕业设计}}
             {\part{毕业论文}}
+        \cleardoublepage
+        \bodystyle
         \inputbody{final/content}
 
         \poststyle
