@@ -38,10 +38,13 @@
         
         \coverstyle
         \inputpage{final/cover}
+        \cleardoublepage
         \inputpage{final/promise}
+        \cleardoublepage
 
         \prevstyle
         \inputpage{final/previous}
+        \cleardoublepage
 
         \bodystyle
         \inputpage{final/toc}
@@ -49,30 +52,31 @@
         \ifthenelse{\equal{\Type}{design}}
             {\part{毕业设计}}
             {\part{毕业论文}}
-        
         \inputbody{final/content}
 
         \poststyle
         \inputpage{final/post}
 
         % Proposal part
-        % \renewcommand{\undergradcurrstage}{proposal}
-        % \newrefsection
+        \renewcommand{\undergradcurrstage}{proposal}
+        \newrefsection
 
-        % \coverstyle
-        % \clearpage
-        % \ifthenelse{\equal{\Type}{design}}
-        %     {\part{毕业设计开题报告}}
-        %     {\part{毕业论文开题报告}}
+        \cleardoublepage
+        \coverstyle
+        \ifthenelse{\equal{\Type}{design}}
+            {\part{毕业设计开题报告}}
+            {\part{毕业论文开题报告}}
+        \cleardoublepage
 
-        % \inputpage{proposal/cover}
-        % % \inputpage{proposal/previous}
+        \inputpage{proposal/cover}
+        \cleardoublepage
+        % \inputpage{proposal/previous}
         
-        % \bodystyle
-        % \inputbody{proposal/content}
+        \bodystyle
+        \inputbody{proposal/content}
 
-        % \poststyle
-        % \inputpage{proposal/post}
+        \poststyle
+        \inputpage{proposal/post}
     }
     {
         % Thesis proposal
